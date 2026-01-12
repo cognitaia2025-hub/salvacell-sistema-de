@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useKV } from '@github/spark/hooks'
 import {
   Dialog,
   DialogContent,
@@ -20,6 +21,7 @@ import { ClientBadge } from './ClientBadge'
 import { OrderTimeline } from './OrderTimeline'
 import { PhotoUpload } from './PhotoUpload'
 import { PaymentManager } from './PaymentManager'
+import type { ShopSettings } from './SettingsModule'
 import type { Order, OrderStatus } from '@/lib/types'
 import { formatCurrency, formatDate } from '@/lib/mock-data'
 import {
@@ -37,6 +39,11 @@ import {
 } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
+const DEFAULT_LABEL_SETTINGS = {
+  labelWidth: '80mm',
+  labelHeight: '50mm'
+}
+
 interface OrderDetailsDialogProps {
   order: Order
   onClose: () => void
@@ -48,6 +55,7 @@ export function OrderDetailsDialog({
   onClose,
   onUpdate
 }: OrderDetailsDialogProps) {
+  const [settings] = useKV<ShopSettings>('shop_settings', null)
   const [newStatus, setNewStatus] = useState<OrderStatus>(order.status)
   const [statusNotes, setStatusNotes] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
@@ -117,6 +125,8 @@ export function OrderDetailsDialog({
 
   const handlePrintLabel = () => {
     const publicUrl = `${window.location.origin}${window.location.pathname}?qr=${order.folio}`
+    const labelWidth = settings?.labelWidth || DEFAULT_LABEL_SETTINGS.labelWidth
+    const labelHeight = settings?.labelHeight || DEFAULT_LABEL_SETTINGS.labelHeight
     
     const printContent = `
       <!DOCTYPE html>
@@ -125,7 +135,7 @@ export function OrderDetailsDialog({
         <title>Etiqueta - ${order.folio}</title>
         <style>
           @page {
-            size: 80mm 50mm;
+            size: ${labelWidth} ${labelHeight};
             margin: 3mm;
           }
           body {
@@ -137,7 +147,7 @@ export function OrderDetailsDialog({
           .label-container {
             border: 1px solid #000;
             padding: 8px;
-            height: calc(50mm - 22px);
+            height: calc(${labelHeight} - 22px);
             display: flex;
             gap: 10px;
           }

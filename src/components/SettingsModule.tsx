@@ -52,6 +52,10 @@ export interface ShopSettings {
   // Branding
   primaryColor: string
   logoUrl: string
+  
+  // Label Printing
+  labelWidth: string
+  labelHeight: string
 }
 
 const DEFAULT_SETTINGS: ShopSettings = {
@@ -75,7 +79,9 @@ const DEFAULT_SETTINGS: ShopSettings = {
   notifyViaWhatsApp: true,
   notifyViaEmail: false,
   primaryColor: '#2563eb',
-  logoUrl: ''
+  logoUrl: '',
+  labelWidth: '80mm',
+  labelHeight: '50mm'
 }
 
 export function SettingsModule() {
@@ -476,6 +482,38 @@ export function SettingsModule() {
                   <p className="text-xs text-muted-foreground">
                     Logo para documentos y tickets impresos
                   </p>
+                </div>
+              </div>
+
+              <Separator className="my-6" />
+
+              <div className="space-y-4">
+                <Label className="text-base">Configuración de Etiquetas</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="labelWidth">Ancho de Etiqueta</Label>
+                    <Input
+                      id="labelWidth"
+                      value={currentSettings.labelWidth}
+                      onChange={(e) => handleChange('labelWidth', e.target.value)}
+                      placeholder="80mm"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Ancho de la etiqueta impresa (ej: 80mm, 58mm, 100mm)
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="labelHeight">Alto de Etiqueta</Label>
+                    <Input
+                      id="labelHeight"
+                      value={currentSettings.labelHeight}
+                      onChange={(e) => handleChange('labelHeight', e.target.value)}
+                      placeholder="50mm"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Alto de la etiqueta impresa (ej: 50mm, 40mm, 60mm)
+                    </p>
+                  </div>
                 </div>
               </div>
 
