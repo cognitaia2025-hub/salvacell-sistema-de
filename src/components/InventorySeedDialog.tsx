@@ -28,6 +28,8 @@ export function InventorySeedDialog() {
   const [stats, setStats] = useState<{
     sencillos: number
     privacidad: number
+    protectoresSencillos: number
+    protectoresUsoRudo: number
     total: number
   } | null>(null)
   const [hasExisting, setHasExisting] = useState(false)
@@ -60,7 +62,7 @@ export function InventorySeedDialog() {
       
       if (seedResult.added > 0) {
         toast.success(`${seedResult.added} productos agregados al inventario`, {
-          description: `Sencillos: 28 | Privacidad: 28`
+          description: `Vidrios: ${Math.min(seedResult.added, 56)} | Protectores: ${Math.max(0, seedResult.added - 56)}`
         })
       }
       
@@ -85,7 +87,7 @@ export function InventorySeedDialog() {
   }
 
   const progressValue = result 
-    ? ((result.added + result.skipped) / 56) * 100 
+    ? ((result.added + result.skipped) / 112) * 100 
     : 0
 
   return (
@@ -93,17 +95,17 @@ export function InventorySeedDialog() {
       <DialogTrigger asChild>
         <Button variant="outline" className="gap-2">
           <Package size={18} />
-          Agregar Vidrios Templados
+          Agregar Productos
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Package size={24} className="text-primary" />
-            Agregar Vidrios Templados al Inventario
+            Agregar Productos al Inventario
           </DialogTitle>
           <DialogDescription>
-            Importa automáticamente 56 productos de vidrios templados para iPhone (modelos 11 a 17)
+            Importa automáticamente 112 productos: 56 vidrios templados y 56 protectores para iPhone (modelos 11 a 17)
           </DialogDescription>
         </DialogHeader>
 
@@ -112,7 +114,7 @@ export function InventorySeedDialog() {
             <Alert>
               <Info size={18} />
               <AlertDescription>
-                Ya tienes {stats.total} vidrios templados en el inventario: {stats.sencillos} sencillos y {stats.privacidad} con privacidad.
+                Ya tienes {stats.total} productos en el inventario: {stats.sencillos} vidrios sencillos, {stats.privacidad} vidrios privacidad, {stats.protectoresSencillos} protectores sencillos y {stats.protectoresUsoRudo} protectores uso rudo.
               </AlertDescription>
             </Alert>
           )}
@@ -121,7 +123,7 @@ export function InventorySeedDialog() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base">Vidrios Sencillos</CardTitle>
-                <CardDescription>Protectores estándar</CardDescription>
+                <CardDescription>Vidrios templados estándar</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-primary">28</div>
@@ -129,11 +131,11 @@ export function InventorySeedDialog() {
                 <div className="mt-3 space-y-1">
                   <div className="flex justify-between text-xs">
                     <span className="text-muted-foreground">Precio compra:</span>
-                    <span className="font-medium">$80 MXN</span>
+                    <span className="font-medium">$10 MXN</span>
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-muted-foreground">Precio venta:</span>
-                    <span className="font-medium">$150 MXN</span>
+                    <span className="font-medium">$50 MXN</span>
                   </div>
                 </div>
               </CardContent>
@@ -150,11 +152,53 @@ export function InventorySeedDialog() {
                 <div className="mt-3 space-y-1">
                   <div className="flex justify-between text-xs">
                     <span className="text-muted-foreground">Precio compra:</span>
-                    <span className="font-medium">$120 MXN</span>
+                    <span className="font-medium">$30 MXN</span>
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-muted-foreground">Precio venta:</span>
-                    <span className="font-medium">$220 MXN</span>
+                    <span className="font-medium">$150 MXN</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Protectores Sencillos</CardTitle>
+                <CardDescription>Protección básica</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-blue-600">28</div>
+                <p className="text-xs text-muted-foreground mt-1">productos</p>
+                <div className="mt-3 space-y-1">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">Precio compra:</span>
+                    <span className="font-medium">$5 MXN</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">Precio venta:</span>
+                    <span className="font-medium">$30 MXN</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Protectores Uso Rudo</CardTitle>
+                <CardDescription>Máxima protección</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-orange-600">28</div>
+                <p className="text-xs text-muted-foreground mt-1">productos</p>
+                <div className="mt-3 space-y-1">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">Precio compra:</span>
+                    <span className="font-medium">$15 MXN</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">Precio venta:</span>
+                    <span className="font-medium">$80 MXN</span>
                   </div>
                 </div>
               </CardContent>
