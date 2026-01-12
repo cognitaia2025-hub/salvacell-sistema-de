@@ -98,8 +98,8 @@ export async function seedVidriosTemplados(): Promise<{
     }
 
     try {
-      const buyPrice = vidrio.type === 'sencillo' ? 80 : 120
-      const sellPrice = vidrio.type === 'sencillo' ? 150 : 220
+      const buyPrice = vidrio.type === 'sencillo' ? 10 : 30
+      const sellPrice = vidrio.type === 'sencillo' ? 50 : 150
 
       const newItem: InventoryItem = {
         id: `vt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -110,7 +110,7 @@ export async function seedVidriosTemplados(): Promise<{
         sellPrice,
         currentStock: 0,
         minStock: 3,
-        location: vidrio.type === 'sencillo' ? 'Estante VT-A' : 'Estante VT-B'
+        location: 'Recepción'
       }
 
       newItems.push(newItem)
