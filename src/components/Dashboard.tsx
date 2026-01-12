@@ -14,6 +14,7 @@ import { OrderCard } from '@/components/OrderCard'
 import { OrderDetailsDialog } from '@/components/OrderDetailsDialog'
 import { NewOrderDialog } from '@/components/NewOrderDialog'
 import { InventoryModule } from '@/components/InventoryModule'
+import { ClientsModule } from '@/components/ClientsModule'
 import type { Order, InventoryItem } from '@/lib/types'
 import { MOCK_ORDERS, MOCK_INVENTORY } from '@/lib/mock-data'
 import {
@@ -24,10 +25,11 @@ import {
   GearSix,
   Plus,
   MagnifyingGlass,
-  WarningCircle
+  WarningCircle,
+  Users
 } from '@phosphor-icons/react'
 
-type ViewMode = 'dashboard' | 'orders' | 'inventory' | 'reports' | 'settings'
+type ViewMode = 'dashboard' | 'orders' | 'clients' | 'inventory' | 'reports' | 'settings'
 
 function Dashboard() {
   const [orders, setOrders] = useKV<Order[]>('orders', MOCK_ORDERS)
@@ -103,6 +105,10 @@ function Dashboard() {
               <TabsTrigger value="orders" className="gap-2">
                 <ClipboardText size={18} />
                 <span className="hidden md:inline">Órdenes</span>
+              </TabsTrigger>
+              <TabsTrigger value="clients" className="gap-2">
+                <Users size={18} />
+                <span className="hidden md:inline">Clientes</span>
               </TabsTrigger>
               <TabsTrigger value="inventory" className="gap-2">
                 <Archive size={18} />
@@ -271,6 +277,8 @@ function Dashboard() {
             )}
           </div>
         )}
+
+        {viewMode === 'clients' && <ClientsModule />}
 
         {viewMode === 'inventory' && <InventoryModule />}
 

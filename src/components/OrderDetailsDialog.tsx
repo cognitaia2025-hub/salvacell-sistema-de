@@ -18,6 +18,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { StatusBadge } from './StatusBadge'
 import { ClientBadge } from './ClientBadge'
 import { OrderTimeline } from './OrderTimeline'
+import { PhotoUpload } from './PhotoUpload'
 import type { Order, OrderStatus } from '@/lib/types'
 import { formatCurrency, formatDate } from '@/lib/mock-data'
 import {
@@ -28,7 +29,9 @@ import {
   Envelope,
   CurrencyDollar,
   QrCode,
-  X
+  X,
+  ShareNetwork,
+  Copy
 } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
@@ -46,6 +49,7 @@ export function OrderDetailsDialog({
   const [newStatus, setNewStatus] = useState<OrderStatus>(order.status)
   const [statusNotes, setStatusNotes] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
+  const [photos, setPhotos] = useState<string[]>([])
 
   const handleStatusChange = () => {
     if (newStatus === order.status) {
@@ -68,16 +72,45 @@ export function OrderDetailsDialog({
             timestamp: new Date().toISOString(),
             userId: '2',
             userName: 'Usuario Actual',
-            notes: statusNotes || undefined
+            notes: statusNotes || undefined,
+            photos: photos.length > 0 ? photos : undefined
           }
         ]
       }
 
       onUpdate(updatedOrder)
       setStatusNotes('')
+      setPhotos([])
       setIsUpdating(false)
       toast.success('Estado actualizado correctamente')
     }, 500)
+  }
+
+  const handleCopyQRLink = () => {
+    const publicUrl = `${window.location.origin}${window.location.pathname}?qr=${order.folio}`
+    navigator.clipboard.writeText(publicUrl)
+    toast.success('Enlace QR copiado al portapapeles')
+  }
+
+  const handleShareQRLink = async () => {
+    const publicUrl = `${window.location.origin}${window.location.pathname}?qr=${order.folio}`
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Seguimiento de Orden ${order.folio}`,
+          text: `Consulta el estado de tu reparación en SalvaCell`,
+          url: publicUrl
+        })
+        toast.success('Enlace compartido')
+      } catch (error) {
+        if ((error as Error).name !== 'AbortError') {
+          handleCopyQRLink()
+        }
+      }
+    } else {
+      handleCopyQRLink()
+    }
   }
 
   return (
@@ -268,13 +301,38 @@ export function OrderDetailsDialog({
                 onChange={(e) => setStatusNotes(e.target.value)}
                 rows={3}
               />
+              <div>
+                <h4 className="text-sm font-medium mb-2">Fotografías de Evidencia (opcional)</h4>
+                <PhotoUpload onPhotosUploaded={setPhotos} />
+              </div>
             </div>
 
-            <div className="pt-6 border-t">
+            <div className="pt-6 border-t space-y-3">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <QrCode size={20} />
                 <span>Código QR: {order.qrCode}</span>
               </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={handleCopyQRLink}
+                >
+                  <Copy size={18} className="mr-2" />
+                  Copiar Enlace QR
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={handleShareQRLink}
+                >
+                  <ShareNetwork size={18} className="mr-2" />
+                  Compartir
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Comparte este enlace con el cliente para que consulte el estado de su orden en tiempo real
+              </p>
             </div>
           </TabsContent>
 

@@ -1,13 +1,17 @@
+import { useState } from 'react'
 import { StatusBadge } from './StatusBadge'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 import type { StatusHistoryEntry } from '@/lib/types'
 import { formatDate } from '@/lib/mock-data'
-import { User } from '@phosphor-icons/react'
+import { User, Image as ImageIcon } from '@phosphor-icons/react'
 
 interface OrderTimelineProps {
   history: StatusHistoryEntry[]
 }
 
 export function OrderTimeline({ history }: OrderTimelineProps) {
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
+
   return (
     <div className="space-y-6">
       {history.map((entry, index) => (
@@ -40,20 +44,43 @@ export function OrderTimeline({ history }: OrderTimelineProps) {
             )}
 
             {entry.photos && entry.photos.length > 0 && (
-              <div className="flex gap-2 flex-wrap">
-                {entry.photos.map((photo, i) => (
-                  <div
-                    key={i}
-                    className="w-20 h-20 rounded-md bg-muted border flex items-center justify-center text-xs text-muted-foreground"
-                  >
-                    📷 Foto {i + 1}
-                  </div>
-                ))}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <ImageIcon size={16} />
+                  <span>{entry.photos.length} foto(s) adjunta(s)</span>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  {entry.photos.map((photo, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setSelectedPhoto(photo)}
+                      className="w-24 h-24 rounded-md bg-muted border hover:border-primary transition-colors overflow-hidden"
+                    >
+                      <img
+                        src={photo}
+                        alt={`Foto ${i + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </div>
         </div>
       ))}
+
+      {selectedPhoto && (
+        <Dialog open onOpenChange={() => setSelectedPhoto(null)}>
+          <DialogContent className="max-w-4xl">
+            <img
+              src={selectedPhoto}
+              alt="Foto ampliada"
+              className="w-full rounded-lg"
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }

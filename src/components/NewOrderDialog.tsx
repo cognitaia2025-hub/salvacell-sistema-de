@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Select,
   SelectContent,
@@ -34,6 +35,8 @@ export function NewOrderDialog({ onClose, onSave }: NewOrderDialogProps) {
   const [newClientName, setNewClientName] = useState('')
   const [newClientPhone, setNewClientPhone] = useState('')
   const [newClientAltPhone, setNewClientAltPhone] = useState('')
+  const [newClientAltContact, setNewClientAltContact] = useState('')
+  const [phoneIsDevice, setPhoneIsDevice] = useState(false)
   const [newClientEmail, setNewClientEmail] = useState('')
   
   const [deviceBrand, setDeviceBrand] = useState('')
@@ -61,11 +64,17 @@ export function NewOrderDialog({ onClose, onSave }: NewOrderDialogProps) {
       return
     }
 
+    if (phoneIsDevice && !newClientAltContact) {
+      toast.error('Contacto alterno es obligatorio cuando el teléfono a reparar es el del cliente')
+      return
+    }
+
     const client: Client = {
       id: `c${Date.now()}`,
       name: newClientName,
       phone: newClientPhone,
       alternatePhone: newClientAltPhone || undefined,
+      alternateContact: newClientAltContact || undefined,
       email: newClientEmail || undefined,
       createdAt: new Date().toISOString(),
       tier: 'new',
@@ -242,6 +251,34 @@ export function NewOrderDialog({ onClose, onSave }: NewOrderDialogProps) {
                         onChange={(e) => setNewClientPhone(e.target.value)}
                       />
                     </div>
+                    <div className="flex items-center space-x-2 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                      <Checkbox
+                        id="phone-is-device"
+                        checked={phoneIsDevice}
+                        onCheckedChange={(checked) => setPhoneIsDevice(checked as boolean)}
+                      />
+                      <label
+                        htmlFor="phone-is-device"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      >
+                        El teléfono a reparar es el mismo que el de contacto del cliente
+                      </label>
+                    </div>
+                    {phoneIsDevice && (
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                        <Label className="text-red-900">Contacto alterno (obligatorio) *</Label>
+                        <Input
+                          type="tel"
+                          value={newClientAltContact}
+                          onChange={(e) => setNewClientAltContact(e.target.value)}
+                          placeholder="Número de familiar o amigo"
+                          className="mt-1"
+                        />
+                        <p className="text-xs text-red-700 mt-1">
+                          Requerido para notificaciones mientras el dispositivo está en reparación
+                        </p>
+                      </div>
+                    )}
                     <div>
                       <Label>Teléfono alternativo</Label>
                       <Input

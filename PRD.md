@@ -18,6 +18,17 @@ Sistema de gestión integral para taller de reparación de dispositivos móviles
 - **Trigger**: Recepcionista/técnico hace clic en "Nueva Orden" desde el dashboard principal.
 - **Progression**: Formulario multi-paso → Datos cliente (nuevo o existente) → Datos dispositivo (marca/modelo/IMEI/contraseña) → Descripción del problema → Diagnóstico y servicios → Costo estimado y fecha entrega → Generar orden con QR → Imprimir ticket.
 - **Success criteria**: Orden creada en <60 segundos, QR generado automáticamente, ticket imprimible con datos legibles, orden consultable por múltiples criterios (folio, teléfono, IMEI, nombre).
+- **Estado Actual**: ✅ COMPLETADO
+  - ✅ Formulario multi-paso completo con validaciones
+  - ✅ Búsqueda de clientes existentes
+  - ✅ Registro de nuevos clientes
+  - ✅ Campo de contacto alterno obligatorio cuando teléfono a reparar es el mismo del cliente
+  - ✅ Todos los campos requeridos (marca, modelo, IMEI, contraseña, accesorios)
+  - ✅ Generación automática de folio único
+  - ✅ QR code generado con cada orden
+  - ✅ Soporte para prioridad (normal/urgente)
+  - ✅ Búsqueda por folio, nombre, teléfono, IMEI
+  - ✅ Filtros por estado
 
 ### Seguimiento de Estados con Historial
 - **Functionality**: Actualizar el estado de la orden (Recibido → En diagnóstico → Esperando repuestos → En reparación → Reparado → Entregado/Cancelado) con registro automático de usuario, fecha/hora y notas opcionales más fotografías adjuntas.
@@ -25,6 +36,14 @@ Sistema de gestión integral para taller de reparación de dispositivos móviles
 - **Trigger**: Técnico o recepcionista abre orden y selecciona "Cambiar Estado".
 - **Progression**: Seleccionar orden → Modal de cambio de estado → Elegir nuevo estado → Agregar notas opcionales → Subir fotos (opcional) → Confirmar → Sistema registra cambio con timestamp y usuario → Notificación automática al cliente (si configurado).
 - **Success criteria**: Historial completo visible con timeline visual, cada cambio muestra quién/cuándo/por qué, fotografías adjuntas accesibles, cliente ve actualización en página pública en tiempo real.
+- **Estado Actual**: ✅ COMPLETADO
+  - ✅ 7 estados implementados (recibido, diagnóstico, esperando repuestos, en reparación, reparado, entregado, cancelado)
+  - ✅ Historial completo con timeline visual
+  - ✅ Registro automático de usuario y timestamp
+  - ✅ Notas opcionales en cada cambio de estado
+  - ✅ Sistema de carga de fotografías de evidencia
+  - ✅ Visualización de fotos en el historial con lightbox
+  - ✅ Badges de estado con colores distintivos
 
 ### Base de Datos de Clientes con Historial
 - **Functionality**: Mantener registro unificado de clientes con todos sus datos de contacto (teléfono principal, alterno, email), historial completo de órdenes previas, equipos registrados, totales acumulados y badges de cliente (VIP >5 órdenes, Frecuente 3-5, Primera visita).
@@ -32,6 +51,15 @@ Sistema de gestión integral para taller de reparación de dispositivos móviles
 - **Trigger**: Al crear orden nueva, buscar cliente existente o registrar uno nuevo; también accesible desde módulo "Clientes".
 - **Progression**: Buscar por nombre/teléfono → Si existe: mostrar historial completo con badge → Seleccionar y continuar orden / Si no existe: formulario nuevo cliente → Guardar → Asociar a orden actual.
 - **Success criteria**: Cliente encontrado en <2 segundos por búsqueda parcial, historial muestra todas las órdenes previas ordenadas por fecha, badges visibles inmediatamente, posibilidad de actualizar número principal al momento de entrega.
+- **Estado Actual**: ✅ COMPLETADO
+  - ✅ Módulo de clientes dedicado con vista de tarjetas
+  - ✅ Búsqueda por nombre, teléfono y email
+  - ✅ Badges de cliente (VIP, Frecuente, Primera visita)
+  - ✅ Historial completo de órdenes por cliente
+  - ✅ Estadísticas: total de visitas, total gastado, promedio por visita
+  - ✅ Vista de equipos registrados por cliente
+  - ✅ Detalles de contacto completos (teléfono principal, alterno, contacto alterno)
+  - ✅ Integración con sistema de órdenes
 
 ### Gestión de Inventario de Repuestos ✅ IMPLEMENTADO
 - **Functionality**: Catálogo completo de repuestos con SKU, nombre, categoría, precios (compra/venta), stock actual, stock mínimo, ubicación en bodega; registro de movimientos (entradas/salidas/ajustes) con responsable y motivo; alertas automáticas cuando stock llega a mínimo.
@@ -58,6 +86,18 @@ Sistema de gestión integral para taller de reparación de dispositivos móviles
 - **Trigger**: Cliente escanea QR desde ticket impreso con su smartphone.
 - **Progression**: Escanear QR → Redirección a URL pública única → Carga página sin login → Visualizar barra de progreso, estado actual, reglamento, datos del equipo → Opción de contactar al taller.
 - **Success criteria**: Página carga en <2 segundos en 3G, diseño mobile-first, estado actualizado en tiempo real, compartible por WhatsApp, accesible 24/7 sin autenticación.
+- **Estado Actual**: ✅ COMPLETADO
+  - ✅ Página pública sin autenticación
+  - ✅ Acceso mediante parámetro ?qr= en URL
+  - ✅ Barra de progreso visual con 6 pasos
+  - ✅ Indicador de estado actual destacado
+  - ✅ Información completa del dispositivo (marca, modelo, IMEI)
+  - ✅ Detalles del servicio y costos
+  - ✅ Fecha de recepción y entrega estimada
+  - ✅ Reglamento del taller
+  - ✅ Información de contacto del taller
+  - ✅ Diseño responsive mobile-first
+  - ✅ Botones para copiar y compartir enlace QR desde el sistema interno
 
 ### Facturación y Control de Pagos
 - **Functionality**: Generar recibos de recepción, cotizaciones y tickets de venta/facturas con desglose de servicios y repuestos; soporte para múltiples métodos de pago (efectivo, tarjeta, transferencia) y pagos parciales (anticipos); registro de ingresos/egresos con arqueo de caja y cierre diario.

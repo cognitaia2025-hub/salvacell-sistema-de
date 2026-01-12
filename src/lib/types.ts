@@ -22,6 +22,7 @@ export interface Client {
   name: string
   phone: string
   alternatePhone?: string
+  alternateContact?: string
   email?: string
   createdAt: string
   tier?: ClientTier
