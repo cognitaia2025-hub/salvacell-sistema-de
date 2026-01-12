@@ -30,6 +30,9 @@ export function InventorySeedDialog() {
     privacidad: number
     protectoresSencillos: number
     protectoresUsoRudo: number
+    accesorios: number
+    cables: number
+    adaptadores: number
     total: number
   } | null>(null)
   const [hasExisting, setHasExisting] = useState(false)
@@ -87,7 +90,7 @@ export function InventorySeedDialog() {
   }
 
   const progressValue = result 
-    ? ((result.added + result.skipped) / 112) * 100 
+    ? ((result.added + result.skipped) / 134) * 100 
     : 0
 
   return (
@@ -105,7 +108,7 @@ export function InventorySeedDialog() {
             Agregar Productos al Inventario
           </DialogTitle>
           <DialogDescription>
-            Importa automáticamente 112 productos: 56 vidrios templados y 56 protectores para iPhone (modelos 11 a 17)
+            Importa automáticamente 134 productos: 56 vidrios templados, 56 protectores y 22 accesorios para iPhone (modelos 11 a 17)
           </DialogDescription>
         </DialogHeader>
 
@@ -114,7 +117,7 @@ export function InventorySeedDialog() {
             <Alert>
               <Info size={18} />
               <AlertDescription>
-                Ya tienes {stats.total} productos en el inventario: {stats.sencillos} vidrios sencillos, {stats.privacidad} vidrios privacidad, {stats.protectoresSencillos} protectores sencillos y {stats.protectoresUsoRudo} protectores uso rudo.
+                Ya tienes {stats.total} productos: {stats.sencillos} vidrios sencillos, {stats.privacidad} vidrios privacidad, {stats.protectoresSencillos} protectores sencillos, {stats.protectoresUsoRudo} protectores uso rudo, {stats.accesorios} accesorios, {stats.cables} cables y {stats.adaptadores} adaptadores.
               </AlertDescription>
             </Alert>
           )}

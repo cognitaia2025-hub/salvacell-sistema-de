@@ -12,9 +12,21 @@ const PROTECTOR_SENCILLO_SELL_PRICE = 30
 const PROTECTOR_USO_RUDO_BUY_PRICE = 15
 const PROTECTOR_USO_RUDO_SELL_PRICE = 80
 
+// Pricing constants - Accesorios
+const ACCESORIO_UNIVERSAL_BUY_PRICE = 200
+const ACCESORIO_UNIVERSAL_SELL_PRICE = 500
+const CABLE_BUY_PRICE = 50
+const CABLE_SELL_PRICE = 150
+const ADAPTADOR_BUY_PRICE = 100
+const ADAPTADOR_SELL_PRICE = 300
+
 // Location constant
 const VIDRIOS_LOCATION = 'Recepción'
 const PROTECTORES_LOCATION = 'Recepción'
+const ACCESORIOS_LOCATION = 'Recepción'
+
+// Stock constants
+const MIN_STOCK = 2
 
 const VIDRIOS_SENCILLOS = [
   "Vidrio Temp. Sencillo Ip_11",
@@ -140,6 +152,37 @@ const PROTECTORES_USO_RUDO = [
   "Protector Uso Rudo Ip_17_Pro_Max"
 ]
 
+const ACCESORIOS_UNIVERSALES_IPHONE = [
+  { name: "AirPods (4th Gen) Wireless Case", description: "Audífonos inalámbricos de última generación. El estuche se carga mediante tecnología inalámbrica o con cable compatible con iPhone" },
+  { name: "AirPods Pro (2nd Gen) MagSafe USB-C", description: "Audífonos intraauriculares con cancelación activa de ruido. Estuche compatible con carga MagSafe y puerto USB-C" },
+  { name: "AirPods Max (USB-C Edition)", description: "Audífonos circumaurales de alta fidelidad. Incluyen cable USB-C para carga y conectividad con dispositivos actuales" },
+  { name: "MagSafe Charger (25W Fast Charge)", description: "Cargador inalámbrico magnético de 25W. Se adhiere a la parte posterior del iPhone para carga sin cables" },
+  { name: "MagSafe Wallet con Find My", description: "Cartera magnética compatible con MagSafe. Incluye tecnología Find My para localización en caso de extravío" },
+  { name: "Apple AirTag (Single Pack)", description: "Dispositivo de rastreo Bluetooth. Permite localizar objetos personales mediante la aplicación Buscar de Apple" },
+  { name: "Kit Carga Rápida 20W (USB-C + Lightning)", description: "Kit de carga completo: adaptador de 20W y cable USB-C a Lightning. Compatible con iPhone 14 y modelos anteriores" },
+  { name: "Kit Carga Rápida 30W (USB-C + USB-C)", description: "Kit de carga de alta potencia: adaptador de 30W y cable USB-C. Compatible con iPhone 15, 16 y 17" },
+  { name: "Kit Carga Estándar (USB-A + Lightning)", description: "Kit de carga básico: adaptador USB-A y cable Lightning. Velocidad de carga estándar para modelos compatibles" },
+  { name: "Kit Carga Estándar (USB-A + USB-C)", description: "Kit de carga básico: adaptador USB-A y cable USB-C. Velocidad de carga estándar para iPhone 15 en adelante" }
+]
+
+const CABLES_CARGA_Y_DATOS = [
+  { name: "Cable Apple USB-C a USB-C (1m) Trenzado", description: "Cable trenzado de 1 metro con conectores USB-C en ambos extremos. Compatible con iPhone 15 en adelante para carga y transferencia de datos" },
+  { name: "Cable Apple USB-C a USB-C (2m) Trenzado", description: "Cable trenzado de 2 metros con conectores USB-C en ambos extremos. Versión extendida para mayor alcance y comodidad" },
+  { name: "Cable Apple USB-C a Lightning (1m)", description: "Cable de 1 metro con conector USB-C y Lightning. Permite carga rápida en iPhone 14 y modelos anteriores compatibles" },
+  { name: "Cable Apple USB-C a Lightning (2m)", description: "Cable de 2 metros con conector USB-C y Lightning. Versión extendida para carga rápida de dispositivos Lightning" },
+  { name: "Cable Apple USB-A a Lightning (1m)", description: "Cable estándar de 1 metro con conectores USB-A y Lightning. Compatible con adaptadores tradicionales y dispositivos Lightning" },
+  { name: "Cable Apple USB-A a USB-C (1m)", description: "Cable de 1 metro con conector USB-A y USB-C. Permite usar adaptadores convencionales con dispositivos iPhone modernos" },
+  { name: "Cable Thunderbolt 4 Pro (USB-C) 1m", description: "Cable profesional de alto rendimiento de 1 metro. Compatible con Thunderbolt 4 para transferencia de datos de alta velocidad" }
+]
+
+const ADAPTADORES_DE_CORRIENTE = [
+  { name: "Apple 20W USB-C Power Adapter", description: "Adaptador de corriente compacto de 20W con puerto USB-C. Proporciona carga rápida para iPhone y dispositivos compatibles" },
+  { name: "Apple 30W USB-C Power Adapter", description: "Adaptador de corriente de 30W con puerto USB-C. Mayor potencia de carga, ideal para iPad y modelos iPhone Pro Max" },
+  { name: "Apple 35W Dual USB-C Port Compact", description: "Adaptador de corriente compacto con dos puertos USB-C de 35W. Permite cargar simultáneamente dos dispositivos compatibles" },
+  { name: "Apple 12W USB-A Power Adapter", description: "Adaptador de corriente de 12W con puerto USB-A. Proporciona velocidad de carga estándar para dispositivos compatibles" },
+  { name: "Apple 5W USB-A Power Adapter (Legacy)", description: "Adaptador de corriente básico de 5W con puerto USB-A. Modelo clásico con velocidad de carga limitada, compatible con dispositivos tradicionales" }
+]
+
 function generateSKU(name: string): string {
   const modelo = name.match(/Ip_[\w_]+/)?.[0] || ''
   
@@ -149,6 +192,7 @@ function generateSKU(name: string): string {
   if (name.includes('Vidrio Temp.')) {
     prefix = 'VT'
     tipo = name.includes('Sencillo') ? 'SEN' : 'PRIV'
+    return `${prefix}-${tipo}-${modelo.replace('Ip_', 'IP')}`
   } else if (name.includes('Protector')) {
     prefix = 'PROT'
     if (name.includes('Uso Rudo')) {
@@ -156,9 +200,31 @@ function generateSKU(name: string): string {
     } else if (name.includes('Sencillo')) {
       tipo = 'SEN'
     }
+    return `${prefix}-${tipo}-${modelo.replace('Ip_', 'IP')}`
+  } else if (name.includes('AirPods') || name.includes('MagSafe') || name.includes('AirTag') || name.includes('Kit ')) {
+    // Accesorios Universales
+    prefix = 'ACC'
+    const shortName = name.substring(0, 15).replace(/[^A-Z0-9]/gi, '').toUpperCase()
+    return `${prefix}-${shortName}`
+  } else if (name.includes('Cable')) {
+    // Cables
+    prefix = 'CABLE'
+    if (name.includes('USB-C a USB-C')) tipo = 'CC'
+    else if (name.includes('USB-C a Lightning')) tipo = 'CL'
+    else if (name.includes('USB-A a Lightning')) tipo = 'AL'
+    else if (name.includes('USB-A a USB-C')) tipo = 'AC'
+    else if (name.includes('Thunderbolt')) tipo = 'TB4'
+    const length = name.includes('2m') ? '2M' : '1M'
+    return `${prefix}-${tipo}-${length}`
+  } else if (name.includes('Adapter') || name.includes('Power')) {
+    // Adaptadores
+    prefix = 'ADAPT'
+    const watts = name.match(/(\d+)W/)?.[1] || 'STD'
+    return `${prefix}-${watts}W`
   }
   
-  return `${prefix}-${tipo}-${modelo.replace('Ip_', 'IP')}`
+  // Fallback
+  return `PROD-${name.substring(0, 10).replace(/[^A-Z0-9]/gi, '').toUpperCase()}`
 }
 
 export async function seedVidriosTemplados(): Promise<{
@@ -211,6 +277,36 @@ export async function seedVidriosTemplados(): Promise<{
       sellPrice: PROTECTOR_USO_RUDO_SELL_PRICE,
       location: PROTECTORES_LOCATION,
       idPrefix: 'prot'
+    })),
+    ...ACCESORIOS_UNIVERSALES_IPHONE.map(item => ({ 
+      name: item.name, 
+      type: 'accesorio_universal' as const,
+      category: 'Accesorios Universales iPhone',
+      buyPrice: ACCESORIO_UNIVERSAL_BUY_PRICE,
+      sellPrice: ACCESORIO_UNIVERSAL_SELL_PRICE,
+      location: ACCESORIOS_LOCATION,
+      idPrefix: 'acc',
+      description: item.description
+    })),
+    ...CABLES_CARGA_Y_DATOS.map(item => ({ 
+      name: item.name, 
+      type: 'cable' as const,
+      category: 'Cables de Carga y Datos',
+      buyPrice: CABLE_BUY_PRICE,
+      sellPrice: CABLE_SELL_PRICE,
+      location: ACCESORIOS_LOCATION,
+      idPrefix: 'cable',
+      description: item.description
+    })),
+    ...ADAPTADORES_DE_CORRIENTE.map(item => ({ 
+      name: item.name, 
+      type: 'adaptador' as const,
+      category: 'Adaptadores de Corriente',
+      buyPrice: ADAPTADOR_BUY_PRICE,
+      sellPrice: ADAPTADOR_SELL_PRICE,
+      location: ACCESORIOS_LOCATION,
+      idPrefix: 'adapt',
+      description: item.description
     }))
   ]
 
@@ -233,7 +329,7 @@ export async function seedVidriosTemplados(): Promise<{
         buyPrice: product.buyPrice,
         sellPrice: product.sellPrice,
         currentStock: 0,
-        minStock: 3,
+        minStock: MIN_STOCK,
         location: product.location
       }
 
@@ -258,7 +354,10 @@ export async function checkIfVidriosExist(): Promise<boolean> {
     item.category === 'Vidrios Templados Sencillos' || 
     item.category === 'Vidrios Templados Privacidad' ||
     item.category === 'Protectores Sencillos' ||
-    item.category === 'Protectores Uso Rudo'
+    item.category === 'Protectores Uso Rudo' ||
+    item.category === 'Accesorios Universales iPhone' ||
+    item.category === 'Cables de Carga y Datos' ||
+    item.category === 'Adaptadores de Corriente'
   )
 }
 
@@ -267,6 +366,9 @@ export async function getVidriosStats(): Promise<{
   privacidad: number
   protectoresSencillos: number
   protectoresUsoRudo: number
+  accesorios: number
+  cables: number
+  adaptadores: number
   total: number
 }> {
   const items = await window.spark.kv.get<InventoryItem[]>('inventory') || []
@@ -275,12 +377,18 @@ export async function getVidriosStats(): Promise<{
   const privacidad = items.filter(item => item.category === 'Vidrios Templados Privacidad').length
   const protectoresSencillos = items.filter(item => item.category === 'Protectores Sencillos').length
   const protectoresUsoRudo = items.filter(item => item.category === 'Protectores Uso Rudo').length
+  const accesorios = items.filter(item => item.category === 'Accesorios Universales iPhone').length
+  const cables = items.filter(item => item.category === 'Cables de Carga y Datos').length
+  const adaptadores = items.filter(item => item.category === 'Adaptadores de Corriente').length
   
   return {
     sencillos,
     privacidad,
     protectoresSencillos,
     protectoresUsoRudo,
-    total: sencillos + privacidad + protectoresSencillos + protectoresUsoRudo
+    accesorios,
+    cables,
+    adaptadores,
+    total: sencillos + privacidad + protectoresSencillos + protectoresUsoRudo + accesorios + cables + adaptadores
   }
 }
