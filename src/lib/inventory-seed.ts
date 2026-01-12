@@ -153,34 +153,34 @@ const PROTECTORES_USO_RUDO = [
 ]
 
 const ACCESORIOS_UNIVERSALES_IPHONE = [
-  { name: "AirPods (4th Gen) Wireless Case", description: "Audífonos inalámbricos de última generación. El estuche se carga mediante tecnología inalámbrica o con cable compatible con iPhone" },
-  { name: "AirPods Pro (2nd Gen) MagSafe USB-C", description: "Audífonos intraauriculares con cancelación activa de ruido. Estuche compatible con carga MagSafe y puerto USB-C" },
-  { name: "AirPods Max (USB-C Edition)", description: "Audífonos circumaurales de alta fidelidad. Incluyen cable USB-C para carga y conectividad con dispositivos actuales" },
-  { name: "MagSafe Charger (25W Fast Charge)", description: "Cargador inalámbrico magnético de 25W. Se adhiere a la parte posterior del iPhone para carga sin cables" },
-  { name: "MagSafe Wallet con Find My", description: "Cartera magnética compatible con MagSafe. Incluye tecnología Find My para localización en caso de extravío" },
-  { name: "Apple AirTag (Single Pack)", description: "Dispositivo de rastreo Bluetooth. Permite localizar objetos personales mediante la aplicación Buscar de Apple" },
-  { name: "Kit Carga Rápida 20W (USB-C + Lightning)", description: "Kit de carga completo: adaptador de 20W y cable USB-C a Lightning. Compatible con iPhone 14 y modelos anteriores" },
-  { name: "Kit Carga Rápida 30W (USB-C + USB-C)", description: "Kit de carga de alta potencia: adaptador de 30W y cable USB-C. Compatible con iPhone 15, 16 y 17" },
-  { name: "Kit Carga Estándar (USB-A + Lightning)", description: "Kit de carga básico: adaptador USB-A y cable Lightning. Velocidad de carga estándar para modelos compatibles" },
-  { name: "Kit Carga Estándar (USB-A + USB-C)", description: "Kit de carga básico: adaptador USB-A y cable USB-C. Velocidad de carga estándar para iPhone 15 en adelante" }
+  { name: "AirPods (4th Gen) Wireless Case", description: "Audífonos inalámbricos de última generación. El estuche se carga mediante tecnología inalámbrica o con cable compatible con iPhone." },
+  { name: "AirPods Pro (2nd Gen) MagSafe USB-C", description: "Audífonos intraauriculares con cancelación activa de ruido. Estuche compatible con carga MagSafe y puerto USB-C." },
+  { name: "AirPods Max (USB-C Edition)", description: "Audífonos circumaurales de alta fidelidad. Incluyen cable USB-C para carga y conectividad con dispositivos actuales." },
+  { name: "MagSafe Charger (25W Fast Charge)", description: "Cargador inalámbrico magnético de 25W. Se adhiere a la parte posterior del iPhone para carga sin cables." },
+  { name: "MagSafe Wallet con Find My", description: "Cartera magnética compatible con MagSafe. Incluye tecnología Find My para localización en caso de extravío." },
+  { name: "Apple AirTag (Single Pack)", description: "Dispositivo de rastreo Bluetooth. Permite localizar objetos personales mediante la aplicación Buscar de Apple." },
+  { name: "Kit Carga Rápida 20W (USB-C + Lightning)", description: "Kit de carga completo: adaptador de 20W y cable USB-C a Lightning. Compatible con iPhone 14 y modelos anteriores." },
+  { name: "Kit Carga Rápida 30W (USB-C + USB-C)", description: "Kit de carga de alta potencia: adaptador de 30W y cable USB-C. Compatible con iPhone 15, 16 y 17." },
+  { name: "Kit Carga Estándar (USB-A + Lightning)", description: "Kit de carga básico: adaptador USB-A y cable Lightning. Velocidad de carga estándar para modelos compatibles." },
+  { name: "Kit Carga Estándar (USB-A + USB-C)", description: "Kit de carga básico: adaptador USB-A y cable USB-C. Velocidad de carga estándar para iPhone 15 en adelante." }
 ]
 
 const CABLES_CARGA_Y_DATOS = [
-  { name: "Cable Apple USB-C a USB-C (1m) Trenzado", description: "Cable trenzado de 1 metro con conectores USB-C en ambos extremos. Compatible con iPhone 15 en adelante para carga y transferencia de datos" },
-  { name: "Cable Apple USB-C a USB-C (2m) Trenzado", description: "Cable trenzado de 2 metros con conectores USB-C en ambos extremos. Versión extendida para mayor alcance y comodidad" },
-  { name: "Cable Apple USB-C a Lightning (1m)", description: "Cable de 1 metro con conector USB-C y Lightning. Permite carga rápida en iPhone 14 y modelos anteriores compatibles" },
-  { name: "Cable Apple USB-C a Lightning (2m)", description: "Cable de 2 metros con conector USB-C y Lightning. Versión extendida para carga rápida de dispositivos Lightning" },
-  { name: "Cable Apple USB-A a Lightning (1m)", description: "Cable estándar de 1 metro con conectores USB-A y Lightning. Compatible con adaptadores tradicionales y dispositivos Lightning" },
-  { name: "Cable Apple USB-A a USB-C (1m)", description: "Cable de 1 metro con conector USB-A y USB-C. Permite usar adaptadores convencionales con dispositivos iPhone modernos" },
-  { name: "Cable Thunderbolt 4 Pro (USB-C) 1m", description: "Cable profesional de alto rendimiento de 1 metro. Compatible con Thunderbolt 4 para transferencia de datos de alta velocidad" }
+  { name: "Cable Apple USB-C a USB-C (1m) Trenzado", description: "Cable trenzado de 1 metro con conectores USB-C en ambos extremos. Compatible con iPhone 15 en adelante para carga y transferencia de datos." },
+  { name: "Cable Apple USB-C a USB-C (2m) Trenzado", description: "Cable trenzado de 2 metros con conectores USB-C en ambos extremos. Versión extendida para mayor alcance y comodidad." },
+  { name: "Cable Apple USB-C a Lightning (1m)", description: "Cable de 1 metro con conector USB-C y Lightning. Permite carga rápida en iPhone 14 y modelos anteriores compatibles." },
+  { name: "Cable Apple USB-C a Lightning (2m)", description: "Cable de 2 metros con conector USB-C y Lightning. Versión extendida para carga rápida de dispositivos Lightning." },
+  { name: "Cable Apple USB-A a Lightning (1m)", description: "Cable estándar de 1 metro con conectores USB-A y Lightning. Compatible con adaptadores tradicionales y dispositivos Lightning." },
+  { name: "Cable Apple USB-A a USB-C (1m)", description: "Cable de 1 metro con conector USB-A y USB-C. Permite usar adaptadores convencionales con dispositivos iPhone modernos." },
+  { name: "Cable Thunderbolt 4 Pro (USB-C) 1m", description: "Cable profesional de alto rendimiento de 1 metro. Compatible con Thunderbolt 4 para transferencia de datos de alta velocidad." }
 ]
 
 const ADAPTADORES_DE_CORRIENTE = [
-  { name: "Apple 20W USB-C Power Adapter", description: "Adaptador de corriente compacto de 20W con puerto USB-C. Proporciona carga rápida para iPhone y dispositivos compatibles" },
-  { name: "Apple 30W USB-C Power Adapter", description: "Adaptador de corriente de 30W con puerto USB-C. Mayor potencia de carga, ideal para iPad y modelos iPhone Pro Max" },
-  { name: "Apple 35W Dual USB-C Port Compact", description: "Adaptador de corriente compacto con dos puertos USB-C de 35W. Permite cargar simultáneamente dos dispositivos compatibles" },
-  { name: "Apple 12W USB-A Power Adapter", description: "Adaptador de corriente de 12W con puerto USB-A. Proporciona velocidad de carga estándar para dispositivos compatibles" },
-  { name: "Apple 5W USB-A Power Adapter (Legacy)", description: "Adaptador de corriente básico de 5W con puerto USB-A. Modelo clásico con velocidad de carga limitada, compatible con dispositivos tradicionales" }
+  { name: "Apple 20W USB-C Power Adapter", description: "Adaptador de corriente compacto de 20W con puerto USB-C. Proporciona carga rápida para iPhone y dispositivos compatibles." },
+  { name: "Apple 30W USB-C Power Adapter", description: "Adaptador de corriente de 30W con puerto USB-C. Mayor potencia de carga, ideal para iPad y modelos iPhone Pro Max." },
+  { name: "Apple 35W Dual USB-C Port Compact", description: "Adaptador de corriente compacto con dos puertos USB-C de 35W. Permite cargar simultáneamente dos dispositivos compatibles." },
+  { name: "Apple 12W USB-A Power Adapter", description: "Adaptador de corriente de 12W con puerto USB-A. Proporciona velocidad de carga estándar para dispositivos compatibles." },
+  { name: "Apple 5W USB-A Power Adapter (Legacy)", description: "Adaptador de corriente básico de 5W con puerto USB-A. Modelo clásico con velocidad de carga limitada, compatible con dispositivos tradicionales." }
 ]
 
 function generateSKU(name: string): string {
@@ -216,7 +216,7 @@ function generateSKU(name: string): string {
     else if (name.includes('Thunderbolt')) tipo = 'TB4'
     const length = name.includes('2m') ? '2M' : '1M'
     return `${prefix}-${tipo}-${length}`
-  } else if (name.includes('Adapter') || name.includes('Power')) {
+  } else if (name.includes('Power Adapter') || name.includes('Adapter')) {
     // Adaptadores
     prefix = 'ADAPT'
     const watts = name.match(/(\d+)W/)?.[1] || 'STD'
