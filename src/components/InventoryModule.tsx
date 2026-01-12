@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -25,6 +25,7 @@ import { InventoryFormDialog } from '@/components/InventoryFormDialog'
 import { InventoryMovementDialog } from '@/components/InventoryMovementDialog'
 import { InventoryStats } from '@/components/InventoryStats'
 import { InventoryMovementHistory } from '@/components/InventoryMovementHistory'
+import { InventorySeedDialog } from '@/components/InventorySeedDialog'
 import { Plus, MagnifyingGlass, Funnel, Archive } from '@phosphor-icons/react'
 import { MOCK_INVENTORY } from '@/lib/mock-data'
 import type { InventoryItem, InventoryMovement } from '@/lib/types'
@@ -41,6 +42,20 @@ export function InventoryModule() {
   const [showNewItemDialog, setShowNewItemDialog] = useState(false)
   const [movementItem, setMovementItem] = useState<InventoryItem | null>(null)
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null)
+
+  useEffect(() => {
+    const handleInventoryUpdate = async () => {
+      const updatedItems = await window.spark.kv.get<InventoryItem[]>('inventory')
+      if (updatedItems) {
+        setItems(updatedItems)
+      }
+    }
+
+    window.addEventListener('inventory-updated', handleInventoryUpdate)
+    return () => {
+      window.removeEventListener('inventory-updated', handleInventoryUpdate)
+    }
+  }, [setItems])
 
   const itemsList = items || []
   const movementsList = movements || []
@@ -139,10 +154,13 @@ export function InventoryModule() {
             Gestión de repuestos y control de stock
           </p>
         </div>
-        <Button size="lg" onClick={() => setShowNewItemDialog(true)} className="gap-2">
-          <Plus size={20} weight="bold" />
-          Nuevo Producto
-        </Button>
+        <div className="flex gap-2">
+          <InventorySeedDialog />
+          <Button size="lg" onClick={() => setShowNewItemDialog(true)} className="gap-2">
+            <Plus size={20} weight="bold" />
+            Nuevo Producto
+          </Button>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>

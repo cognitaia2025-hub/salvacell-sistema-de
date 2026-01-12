@@ -78,11 +78,11 @@ Sistema de gestión integral para taller de reparación de dispositivos móviles
   - ✅ Integración con sistema de órdenes
 
 ### Gestión de Inventario de Repuestos ✅ IMPLEMENTADO
-- **Functionality**: Catálogo completo de repuestos con SKU, nombre, categoría, precios (compra/venta), stock actual, stock mínimo, ubicación en bodega; registro de movimientos (entradas/salidas/ajustes) con responsable y motivo; alertas automáticas cuando stock llega a mínimo.
+- **Functionality**: Catálogo completo de repuestos con SKU, nombre, categoría, precios (compra/venta), stock actual, stock mínimo, ubicación en bodega; registro de movimientos (entradas/salidas/ajustes) con responsable y motivo; alertas automáticas cuando stock llega a mínimo. **Nuevo**: Sistema de importación masiva de productos predefinidos (vidrios templados para iPhone).
 - **Purpose**: Control preciso de piezas disponibles, evitar faltantes, optimizar compras y vincular uso de repuestos directamente a órdenes de reparación.
 - **Trigger**: Bodeguero accede a módulo "Inventario" o técnico busca repuesto al trabajar en orden.
-- **Progression**: Ver catálogo filtrado por categoría → Agregar/editar repuesto → Registrar movimiento (entrada desde compra o salida por uso en orden) → Sistema actualiza stock → Si stock < mínimo: generar alerta visible en panel de notificaciones.
-- **Success criteria**: Toda salida vinculada a orden específica, alertas visibles en dashboard, reportes de rotación y necesidades de reabastecimiento generados automáticamente, búsqueda rápida por código o nombre.
+- **Progression**: Ver catálogo filtrado por categoría → Agregar/editar repuesto → Registrar movimiento (entrada desde compra o salida por uso en orden) → Sistema actualiza stock → Si stock < mínimo: generar alerta visible en panel de notificaciones. **Nuevo flujo**: Clic en "Agregar Vidrios Templados" → Ver resumen de productos (56 vidrios: 28 sencillos + 28 privacidad) → Confirmar importación → Sistema agrega productos automáticamente con SKU, precios y categorías predefinidas.
+- **Success criteria**: Toda salida vinculada a orden específica, alertas visibles en dashboard, reportes de rotación y necesidades de reabastecimiento generados automáticamente, búsqueda rápida por código o nombre. **Nuevo**: Importación masiva completada en <5 segundos, productos separados por categoría (Sencillos vs Privacidad), sin duplicados.
 - **Estado Actual**: 
   - ✅ Tabla completa de inventario con ordenamiento por nombre, categoría y stock
   - ✅ Formulario CRUD para productos (crear, editar, eliminar)
@@ -94,6 +94,13 @@ Sistema de gestión integral para taller de reparación de dispositivos móviles
   - ✅ Historial de movimientos con timestamp, usuario y motivo
   - ✅ Gráficas de valor por categoría (Top 5)
   - ✅ Persistencia de datos con useKV
+  - ✅ **NUEVO**: Sistema de seeding/importación masiva de vidrios templados para iPhone
+  - ✅ **NUEVO**: Dialog de importación con vista previa de productos y precios
+  - ✅ **NUEVO**: 56 productos predefinidos (iPhone 11 a 17): 28 sencillos ($80/$150) + 28 privacidad ($120/$220)
+  - ✅ **NUEVO**: Generación automática de SKU (VT-SEN-IP13, VT-PRIV-IP14PRO, etc.)
+  - ✅ **NUEVO**: Separación por categorías (Vidrios Templados Sencillos / Vidrios Templados Privacidad)
+  - ✅ **NUEVO**: Detección de productos existentes para evitar duplicados
+  - ✅ **NUEVO**: Feedback en tiempo real con contadores de productos agregados/omitidos
   - ⏳ Pendiente: Vinculación de salidas a órdenes específicas
 
 ### Consulta Pública vía QR (Página sin Login)
