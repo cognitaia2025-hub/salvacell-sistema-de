@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useKV } from '@github/spark/hooks'
 import {
   Dialog,
   DialogContent,
@@ -20,6 +21,7 @@ import { ClientBadge } from './ClientBadge'
 import { OrderTimeline } from './OrderTimeline'
 import { PhotoUpload } from './PhotoUpload'
 import { PaymentManager } from './PaymentManager'
+import type { ShopSettings } from './SettingsModule'
 import type { Order, OrderStatus } from '@/lib/types'
 import { formatCurrency, formatDate } from '@/lib/mock-data'
 import {
@@ -32,9 +34,15 @@ import {
   QrCode,
   X,
   ShareNetwork,
-  Copy
+  Copy,
+  Printer
 } from '@phosphor-icons/react'
 import { toast } from 'sonner'
+
+const DEFAULT_LABEL_SETTINGS = {
+  labelWidth: '80mm',
+  labelHeight: '50mm'
+}
 
 interface OrderDetailsDialogProps {
   order: Order
@@ -47,6 +55,7 @@ export function OrderDetailsDialog({
   onClose,
   onUpdate
 }: OrderDetailsDialogProps) {
+  const [settings] = useKV<ShopSettings>('shop_settings', null)
   const [newStatus, setNewStatus] = useState<OrderStatus>(order.status)
   const [statusNotes, setStatusNotes] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
@@ -111,6 +120,119 @@ export function OrderDetailsDialog({
       }
     } else {
       handleCopyQRLink()
+    }
+  }
+
+  const handlePrintLabel = () => {
+    const publicUrl = `${window.location.origin}${window.location.pathname}?qr=${order.folio}`
+    const labelWidth = settings?.labelWidth || DEFAULT_LABEL_SETTINGS.labelWidth
+    const labelHeight = settings?.labelHeight || DEFAULT_LABEL_SETTINGS.labelHeight
+    
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Etiqueta - ${order.folio}</title>
+        <style>
+          @page {
+            size: ${labelWidth} ${labelHeight};
+            margin: 3mm;
+          }
+          body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 8px;
+            font-size: 11px;
+          }
+          .label-container {
+            border: 1px solid #000;
+            padding: 8px;
+            height: calc(${labelHeight} - 22px);
+            display: flex;
+            gap: 10px;
+          }
+          .qr-section {
+            flex-shrink: 0;
+            text-align: center;
+          }
+          .qr-code {
+            width: 70px;
+            height: 70px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            border: 1px solid #ccc;
+            margin-bottom: 4px;
+          }
+          .info-section {
+            flex: 1;
+            overflow: hidden;
+          }
+          .folio {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #000;
+          }
+          .client-name {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 2px;
+          }
+          .phone {
+            font-size: 11px;
+            margin-bottom: 4px;
+          }
+          .device {
+            font-size: 10px;
+            margin-bottom: 2px;
+          }
+          .imei {
+            font-size: 9px;
+            color: #555;
+          }
+          .date {
+            font-size: 8px;
+            color: #666;
+            margin-top: 4px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="label-container">
+          <div class="qr-section">
+            <div class="qr-code">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${encodeURIComponent(publicUrl)}" width="70" height="70" alt="QR"/>
+            </div>
+            <div style="font-size: 8px;">${order.folio}</div>
+          </div>
+          <div class="info-section">
+            <div class="folio">${order.folio}</div>
+            <div class="client-name">${order.client.name}</div>
+            <div class="phone">Tel: ${order.client.phone}</div>
+            <div class="device">${order.device.brand} ${order.device.model}</div>
+            <div class="imei">IMEI: ${order.device.imei}</div>
+            <div class="date">Recibido: ${new Date(order.createdAt).toLocaleDateString('es-MX')}</div>
+          </div>
+        </div>
+        <script>
+          window.onload = function() {
+            setTimeout(function() { window.print(); }, 500);
+          }
+        </script>
+      </body>
+      </html>
+    `
+    
+    const printWindow = window.open('', '_blank')
+    if (printWindow) {
+      printWindow.document.write(printContent)
+      printWindow.document.close()
+      toast.success('Abriendo ventana de impresión...')
+    } else {
+      toast.error('Por favor habilita las ventanas emergentes para imprimir')
     }
   }
 
@@ -320,7 +442,7 @@ export function OrderDetailsDialog({
                   onClick={handleCopyQRLink}
                 >
                   <Copy size={18} className="mr-2" />
-                  Copiar Enlace QR
+                  Copiar Enlace
                 </Button>
                 <Button
                   variant="outline"
@@ -330,9 +452,17 @@ export function OrderDetailsDialog({
                   <ShareNetwork size={18} className="mr-2" />
                   Compartir
                 </Button>
+                <Button
+                  variant="default"
+                  className="flex-1"
+                  onClick={handlePrintLabel}
+                >
+                  <Printer size={18} className="mr-2" />
+                  Imprimir Etiqueta
+                </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Comparte este enlace con el cliente para que consulte el estado de su orden en tiempo real
+                La etiqueta incluye: nombre del cliente, teléfono, datos del equipo (marca/modelo/IMEI) y código QR
               </p>
             </div>
           </TabsContent>

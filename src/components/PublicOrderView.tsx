@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
 import type { Order } from '@/lib/types'
+import type { ShopSettings } from '@/components/SettingsModule'
 import { formatDate, formatCurrency } from '@/lib/mock-data'
 import {
   DeviceMobile,
@@ -11,17 +12,46 @@ import {
   CheckCircle,
   Clock,
   Phone,
-  WarningCircle
+  WarningCircle,
+  Camera,
+  ClockCounterClockwise
 } from '@phosphor-icons/react'
 
 interface PublicOrderViewProps {
   folio: string
 }
 
+const DEFAULT_SETTINGS: ShopSettings = {
+  shopName: 'SalvaCell',
+  address: 'Calle Ejemplo #123, Col. Centro, CDMX',
+  phone: '555-123-4567',
+  whatsapp: '5551234567',
+  email: 'contacto@salvacell.com',
+  website: 'www.salvacell.com',
+  openTime: '09:00',
+  closeTime: '19:00',
+  workDays: 'Lunes a Sábado',
+  workshopRules: `• El plazo de entrega puede variar según disponibilidad de repuestos.
+• Los equipos no reclamados después de 30 días quedan a disposición del taller.
+• La garantía del servicio es de 30 días sobre la reparación realizada.
+• Se requiere identificación oficial para recoger el equipo.
+• El pago del servicio debe realizarse al momento de la entrega.`,
+  warrantyDays: 30,
+  abandonedDeviceDays: 30,
+  notifyOnStatusChange: true,
+  notifyViaWhatsApp: true,
+  notifyViaEmail: false,
+  primaryColor: '#2563eb',
+  logoUrl: ''
+}
+
 export function PublicOrderView({ folio }: PublicOrderViewProps) {
   const [orders] = useKV<Order[]>('orders', [])
+  const [settings] = useKV<ShopSettings>('shop_settings', DEFAULT_SETTINGS)
   const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(true)
+
+  const shopSettings = settings || DEFAULT_SETTINGS
 
   useEffect(() => {
     const ordersList = orders || []
@@ -71,11 +101,29 @@ export function PublicOrderView({ folio }: PublicOrderViewProps) {
   const currentStepIndex = statusSteps.findIndex((s) => s.key === order.status)
   const progress = ((currentStepIndex + 1) / statusSteps.length) * 100
 
+  // Get all photos from status history
+  const historyPhotos = order.statusHistory
+    .filter(h => h.photos && h.photos.length > 0)
+    .flatMap(h => h.photos || [])
+
+  // Recent status changes for the timeline (last 5)
+  const recentHistory = order.statusHistory.slice(-5).reverse()
+
+  const statusLabels: Record<string, string> = {
+    received: 'Recibido',
+    diagnosing: 'En Diagnóstico',
+    waiting_parts: 'Esperando Repuestos',
+    in_repair: 'En Reparación',
+    repaired: 'Reparado',
+    delivered: 'Entregado',
+    cancelled: 'Cancelado'
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4">
       <div className="max-w-2xl mx-auto space-y-6 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary mb-2">SalvaCell</h1>
+          <h1 className="text-3xl font-bold text-primary mb-2">{shopSettings.shopName}</h1>
           <p className="text-muted-foreground">
             Seguimiento de tu Reparación
           </p>
@@ -233,6 +281,69 @@ export function PublicOrderView({ folio }: PublicOrderViewProps) {
                 </div>
               </>
             )}
+
+            {/* Diagnosis Photos Section */}
+            {historyPhotos.length > 0 && (
+              <>
+                <Separator />
+                <div>
+                  <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <Camera size={20} />
+                    Fotografías de Diagnóstico
+                  </h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    {historyPhotos.slice(0, 6).map((photo, index) => (
+                      <div 
+                        key={index}
+                        className="aspect-square rounded-lg bg-muted overflow-hidden"
+                      >
+                        <img 
+                          src={photo} 
+                          alt={`Foto ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  {historyPhotos.length > 6 && (
+                    <p className="text-xs text-muted-foreground mt-2 text-center">
+                      +{historyPhotos.length - 6} fotos más
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* Status History Summary */}
+            {recentHistory.length > 1 && (
+              <>
+                <Separator />
+                <div>
+                  <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <ClockCounterClockwise size={20} />
+                    Historial Reciente
+                  </h3>
+                  <div className="space-y-2">
+                    {recentHistory.map((entry, index) => (
+                      <div 
+                        key={entry.id}
+                        className={`text-sm p-2 rounded ${index === 0 ? 'bg-primary/10' : 'bg-muted/50'}`}
+                      >
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium">{statusLabels[entry.status] || entry.status}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {formatDate(entry.timestamp)}
+                          </span>
+                        </div>
+                        {entry.notes && (
+                          <p className="text-xs text-muted-foreground mt-1">{entry.notes}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -240,25 +351,8 @@ export function PublicOrderView({ folio }: PublicOrderViewProps) {
           <CardHeader>
             <CardTitle className="text-lg">Reglamento del Taller</CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground space-y-2">
-            <p>
-              • El plazo de entrega puede variar según disponibilidad de
-              repuestos.
-            </p>
-            <p>
-              • Los equipos no reclamados después de 30 días quedan a
-              disposición del taller.
-            </p>
-            <p>
-              • La garantía del servicio es de 30 días sobre la reparación
-              realizada.
-            </p>
-            <p>
-              • Se requiere identificación oficial para recoger el equipo.
-            </p>
-            <p>
-              • El pago del servicio debe realizarse al momento de la entrega.
-            </p>
+          <CardContent className="text-sm text-muted-foreground whitespace-pre-line">
+            {shopSettings.workshopRules}
           </CardContent>
         </Card>
 
@@ -269,12 +363,22 @@ export function PublicOrderView({ folio }: PublicOrderViewProps) {
             <p className="text-sm text-blue-100 mb-4">
               Contáctanos para cualquier consulta sobre tu reparación
             </p>
-            <div className="font-bold text-xl">555-123-4567</div>
+            <div className="font-bold text-xl">{shopSettings.phone}</div>
+            {shopSettings.whatsapp && (
+              <a 
+                href={`https://wa.me/${shopSettings.whatsapp}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-3 px-4 py-2 bg-green-500 rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
+              >
+                💬 WhatsApp
+              </a>
+            )}
           </CardContent>
         </Card>
 
         <div className="text-center text-xs text-muted-foreground pt-4">
-          <p>SalvaCell - Sistema de Gestión de Reparaciones</p>
+          <p>{shopSettings.shopName} - Sistema de Gestión de Reparaciones</p>
           <p className="mt-1">© {new Date().getFullYear()} Todos los derechos reservados</p>
         </div>
       </div>
