@@ -13,8 +13,9 @@ import {
 import { OrderCard } from '@/components/OrderCard'
 import { OrderDetailsDialog } from '@/components/OrderDetailsDialog'
 import { NewOrderDialog } from '@/components/NewOrderDialog'
-import type { Order } from '@/lib/types'
-import { MOCK_ORDERS } from '@/lib/mock-data'
+import { InventoryModule } from '@/components/InventoryModule'
+import type { Order, InventoryItem } from '@/lib/types'
+import { MOCK_ORDERS, MOCK_INVENTORY } from '@/lib/mock-data'
 import {
   House,
   ClipboardText,
@@ -30,6 +31,7 @@ type ViewMode = 'dashboard' | 'orders' | 'inventory' | 'reports' | 'settings'
 
 function Dashboard() {
   const [orders, setOrders] = useKV<Order[]>('orders', MOCK_ORDERS)
+  const [inventory, setInventory] = useKV<InventoryItem[]>('inventory', MOCK_INVENTORY)
   const [viewMode, setViewMode] = useState<ViewMode>('dashboard')
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [showNewOrder, setShowNewOrder] = useState(false)
@@ -37,6 +39,7 @@ function Dashboard() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
 
   const ordersList = orders || []
+  const inventoryList = inventory || []
 
   const filteredOrders = ordersList.filter((order) => {
     const matchesSearch =
@@ -62,7 +65,9 @@ function Dashboard() {
     urgent: ordersList.filter((o) => o.priority === 'urgent').length
   }
 
-  const lowStockCount = 1
+  const lowStockItems = inventoryList.filter((item) => item.currentStock < item.minStock)
+  const outOfStockItems = inventoryList.filter((item) => item.currentStock === 0)
+  const lowStockCount = lowStockItems.length
 
   return (
     <div className="min-h-screen bg-background">
@@ -160,19 +165,39 @@ function Dashboard() {
             {lowStockCount > 0 && (
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3">
                 <WarningCircle size={24} className="text-amber-600 flex-shrink-0" weight="fill" />
-                <div>
+                <div className="flex-1">
                   <h3 className="font-semibold text-amber-900 mb-1">
                     Alerta de Inventario
                   </h3>
-                  <p className="text-sm text-amber-700">
-                    {lowStockCount} producto(s) por debajo del stock mínimo.{' '}
+                  <p className="text-sm text-amber-700 mb-3">
+                    {lowStockCount} producto(s) por debajo del stock mínimo
+                    {outOfStockItems.length > 0 && ` (${outOfStockItems.length} sin stock)`}.{' '}
                     <button
                       onClick={() => setViewMode('inventory')}
-                      className="underline font-medium"
+                      className="underline font-medium hover:text-amber-900"
                     >
                       Ver inventario
                     </button>
                   </p>
+                  <div className="space-y-1">
+                    {lowStockItems.slice(0, 3).map((item) => (
+                      <div key={item.id} className="text-xs bg-white/50 p-2 rounded flex items-center justify-between">
+                        <span className="font-medium">{item.name}</span>
+                        <span className="text-amber-900">
+                          {item.currentStock === 0 ? (
+                            <span className="font-bold">Sin stock</span>
+                          ) : (
+                            <>Stock: {item.currentStock} / {item.minStock} mín</>
+                          )}
+                        </span>
+                      </div>
+                    ))}
+                    {lowStockItems.length > 3 && (
+                      <div className="text-xs text-amber-700 pt-1">
+                        +{lowStockItems.length - 3} producto(s) más
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -247,15 +272,7 @@ function Dashboard() {
           </div>
         )}
 
-        {viewMode === 'inventory' && (
-          <div className="text-center py-12">
-            <Archive size={48} className="mx-auto text-muted-foreground mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Módulo de Inventario</h2>
-            <p className="text-muted-foreground">
-              Gestión de repuestos y control de stock próximamente
-            </p>
-          </div>
-        )}
+        {viewMode === 'inventory' && <InventoryModule />}
 
         {viewMode === 'reports' && (
           <div className="text-center py-12">

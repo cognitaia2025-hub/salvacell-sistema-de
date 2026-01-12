@@ -33,12 +33,24 @@ Sistema de gestión integral para taller de reparación de dispositivos móviles
 - **Progression**: Buscar por nombre/teléfono → Si existe: mostrar historial completo con badge → Seleccionar y continuar orden / Si no existe: formulario nuevo cliente → Guardar → Asociar a orden actual.
 - **Success criteria**: Cliente encontrado en <2 segundos por búsqueda parcial, historial muestra todas las órdenes previas ordenadas por fecha, badges visibles inmediatamente, posibilidad de actualizar número principal al momento de entrega.
 
-### Gestión de Inventario de Repuestos
+### Gestión de Inventario de Repuestos ✅ IMPLEMENTADO
 - **Functionality**: Catálogo completo de repuestos con SKU, nombre, categoría, precios (compra/venta), stock actual, stock mínimo, ubicación en bodega; registro de movimientos (entradas/salidas/ajustes) con responsable y motivo; alertas automáticas cuando stock llega a mínimo.
 - **Purpose**: Control preciso de piezas disponibles, evitar faltantes, optimizar compras y vincular uso de repuestos directamente a órdenes de reparación.
 - **Trigger**: Bodeguero accede a módulo "Inventario" o técnico busca repuesto al trabajar en orden.
 - **Progression**: Ver catálogo filtrado por categoría → Agregar/editar repuesto → Registrar movimiento (entrada desde compra o salida por uso en orden) → Sistema actualiza stock → Si stock < mínimo: generar alerta visible en panel de notificaciones.
 - **Success criteria**: Toda salida vinculada a orden específica, alertas visibles en dashboard, reportes de rotación y necesidades de reabastecimiento generados automáticamente, búsqueda rápida por código o nombre.
+- **Estado Actual**: 
+  - ✅ Tabla completa de inventario con ordenamiento por nombre, categoría y stock
+  - ✅ Formulario CRUD para productos (crear, editar, eliminar)
+  - ✅ Sistema de movimientos (entrada, salida, ajuste) con historial completo
+  - ✅ Estadísticas en tiempo real: valor total, productos totales, stock bajo, sin stock
+  - ✅ Alertas visuales en dashboard principal mostrando productos con stock bajo
+  - ✅ Filtros avanzados por categoría, estado de stock y búsqueda por texto
+  - ✅ Badges de estado (stock normal, bajo, sin stock) con códigos de color
+  - ✅ Historial de movimientos con timestamp, usuario y motivo
+  - ✅ Gráficas de valor por categoría (Top 5)
+  - ✅ Persistencia de datos con useKV
+  - ⏳ Pendiente: Vinculación de salidas a órdenes específicas
 
 ### Consulta Pública vía QR (Página sin Login)
 - **Functionality**: Página web ligera y responsive accesible escaneando el QR del ticket, que muestra barra de progreso visual del estado actual, reglamento del taller, información básica de la orden (folio, marca/modelo, fecha recepción) y fotografías reducidas de diagnóstico si el taller las publica.
