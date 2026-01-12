@@ -1,5 +1,14 @@
 import type { InventoryItem } from './types'
 
+// Pricing constants
+const SENCILLO_BUY_PRICE = 10
+const SENCILLO_SELL_PRICE = 50
+const PRIVACIDAD_BUY_PRICE = 30
+const PRIVACIDAD_SELL_PRICE = 150
+
+// Location constant
+const VIDRIOS_LOCATION = 'Recepción'
+
 const VIDRIOS_SENCILLOS = [
   "Vidrio Temp. Sencillo Ip_11",
   "Vidrio Temp. Sencillo Ip_11_Pro",
@@ -98,8 +107,8 @@ export async function seedVidriosTemplados(): Promise<{
     }
 
     try {
-      const buyPrice = vidrio.type === 'sencillo' ? 10 : 30
-      const sellPrice = vidrio.type === 'sencillo' ? 50 : 150
+      const buyPrice = vidrio.type === 'sencillo' ? SENCILLO_BUY_PRICE : PRIVACIDAD_BUY_PRICE
+      const sellPrice = vidrio.type === 'sencillo' ? SENCILLO_SELL_PRICE : PRIVACIDAD_SELL_PRICE
 
       const newItem: InventoryItem = {
         id: `vt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -110,7 +119,7 @@ export async function seedVidriosTemplados(): Promise<{
         sellPrice,
         currentStock: 0,
         minStock: 3,
-        location: 'Recepción'
+        location: VIDRIOS_LOCATION
       }
 
       newItems.push(newItem)
