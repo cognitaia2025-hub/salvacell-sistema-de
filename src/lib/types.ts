@@ -54,6 +54,7 @@ export interface Payment {
   method: PaymentMethod
   timestamp: string
   userId: string
+  userName: string
   notes?: string
 }
 

@@ -19,6 +19,7 @@ import { StatusBadge } from './StatusBadge'
 import { ClientBadge } from './ClientBadge'
 import { OrderTimeline } from './OrderTimeline'
 import { PhotoUpload } from './PhotoUpload'
+import { PaymentManager } from './PaymentManager'
 import type { Order, OrderStatus } from '@/lib/types'
 import { formatCurrency, formatDate } from '@/lib/mock-data'
 import {
@@ -341,59 +342,7 @@ export function OrderDetailsDialog({
           </TabsContent>
 
           <TabsContent value="payments" className="mt-6">
-            <div className="space-y-4">
-              {order.payments.length > 0 ? (
-                <>
-                  {order.payments.map((payment) => (
-                    <div
-                      key={payment.id}
-                      className="p-4 border rounded-lg flex justify-between items-center"
-                    >
-                      <div>
-                        <div className="font-semibold">
-                          {formatCurrency(payment.amount)}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {payment.method === 'cash' && 'Efectivo'}
-                          {payment.method === 'card' && 'Tarjeta'}
-                          {payment.method === 'transfer' && 'Transferencia'}
-                          {' • '}
-                          {formatDate(payment.timestamp)}
-                        </div>
-                        {payment.notes && (
-                          <div className="text-sm text-muted-foreground mt-1">
-                            {payment.notes}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  <div className="pt-4 border-t">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">Total pagado:</span>
-                      <span className="text-xl font-bold text-green-600">
-                        {formatCurrency(
-                          order.payments.reduce((sum, p) => sum + p.amount, 0)
-                        )}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center mt-2">
-                      <span className="font-medium">Pendiente:</span>
-                      <span className="text-xl font-bold text-amber-600">
-                        {formatCurrency(
-                          order.estimatedCost -
-                            order.payments.reduce((sum, p) => sum + p.amount, 0)
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="text-center py-12 text-muted-foreground">
-                  No hay pagos registrados
-                </div>
-              )}
-            </div>
+            <PaymentManager order={order} onUpdate={onUpdate} />
           </TabsContent>
         </Tabs>
       </DialogContent>

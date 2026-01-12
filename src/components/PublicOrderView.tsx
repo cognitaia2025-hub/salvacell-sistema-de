@@ -191,6 +191,29 @@ export function PublicOrderView({ folio }: PublicOrderViewProps) {
                     {formatCurrency(order.estimatedCost)}
                   </span>
                 </div>
+                {order.payments.length > 0 && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-2 space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-green-700 font-medium">Pagado:</span>
+                      <span className="text-lg font-bold text-green-700">
+                        {formatCurrency(order.payments.reduce((sum, p) => sum + p.amount, 0))}
+                      </span>
+                    </div>
+                    {order.paymentStatus === 'partial' && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-red-700 font-medium">Pendiente:</span>
+                        <span className="text-lg font-bold text-red-700">
+                          {formatCurrency(order.estimatedCost - order.payments.reduce((sum, p) => sum + p.amount, 0))}
+                        </span>
+                      </div>
+                    )}
+                    {order.paymentStatus === 'paid' && (
+                      <div className="text-xs text-green-700 text-center pt-1">
+                        ✓ Pagado completamente
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Entrega estimada:</span>
                   <span className="font-medium">

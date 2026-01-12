@@ -118,6 +118,7 @@ export const MOCK_ORDERS: Order[] = [
         method: 'cash',
         timestamp: '2024-12-26T10:30:00Z',
         userId: '3',
+        userName: 'Recepcionista',
         notes: 'Anticipo 30%'
       }
     ],

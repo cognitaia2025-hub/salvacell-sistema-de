@@ -99,12 +99,22 @@ Sistema de gestión integral para taller de reparación de dispositivos móviles
   - ✅ Diseño responsive mobile-first
   - ✅ Botones para copiar y compartir enlace QR desde el sistema interno
 
-### Facturación y Control de Pagos
+### Facturación y Control de Pagos ✅ IMPLEMENTADO
 - **Functionality**: Generar recibos de recepción, cotizaciones y tickets de venta/facturas con desglose de servicios y repuestos; soporte para múltiples métodos de pago (efectivo, tarjeta, transferencia) y pagos parciales (anticipos); registro de ingresos/egresos con arqueo de caja y cierre diario.
 - **Purpose**: Formalizar transacciones, control financiero diario, trazabilidad de pagos y cumplimiento fiscal básico.
 - **Trigger**: Al crear orden (recibo de recepción), al finalizar reparación (cotización/factura final), al recibir pago.
 - **Progression**: Seleccionar orden → Generar documento → Elegir tipo (recibo/cotización/factura) → Desglose automático de servicios y repuestos usados → Agregar método de pago → Registrar monto → Generar PDF e imprimir → Actualizar estado de pago en orden.
 - **Success criteria**: PDFs generados instantáneamente con datos del taller y cliente, anticipos reflejados correctamente en balance, arqueo de caja diario sin discrepancias, reportes financieros exactos.
+- **Estado Actual**:
+  - ✅ Registro de múltiples pagos por orden
+  - ✅ Soporte para anticipos y pagos parciales
+  - ✅ Tres métodos de pago (efectivo, tarjeta, transferencia)
+  - ✅ Cálculo automático de saldo pendiente
+  - ✅ Actualización automática de estado de pago (pendiente → parcial → pagado)
+  - ✅ Historial completo de pagos con timestamps, usuario y notas
+  - ✅ Validaciones de montos y estado de pago
+  - ✅ Indicadores visuales de estado de pago con badges
+  - ✅ Vista detallada en pestaña de Pagos en el detalle de orden
 
 ### Reportes y Analítica
 - **Functionality**: Dashboards y reportes exportables (PDF/Excel) de órdenes por período, servicios más solicitados, tiempo promedio de reparación, ventas por tipo de servicio, margen de utilidad, valor de inventario, productos más usados, clientes frecuentes vs nuevos.

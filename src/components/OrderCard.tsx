@@ -2,6 +2,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { StatusBadge } from './StatusBadge'
 import { ClientBadge } from './ClientBadge'
+import { PaymentStatusBadge } from './PaymentStatusBadge'
 import type { Order } from '@/lib/types'
 import { formatCurrency, formatDateShort } from '@/lib/mock-data'
 import { DeviceMobile, CalendarBlank, CurrencyDollar } from '@phosphor-icons/react'
@@ -12,8 +13,8 @@ interface OrderCardProps {
 }
 
 export function OrderCard({ order, onClick }: OrderCardProps) {
-  const isPaid = order.paymentStatus === 'paid'
-  const isPartial = order.paymentStatus === 'partial'
+  const totalPaid = order.payments.reduce((sum, p) => sum + p.amount, 0)
+  const remainingBalance = order.estimatedCost - totalPaid
 
   return (
     <Card
@@ -27,7 +28,10 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
           </h3>
           <p className="text-sm text-muted-foreground">{order.client.name}</p>
         </div>
-        <StatusBadge status={order.status} />
+        <div className="flex flex-col gap-2">
+          <StatusBadge status={order.status} />
+          <PaymentStatusBadge status={order.paymentStatus} />
+        </div>
       </div>
 
       <div className="space-y-3">
@@ -60,11 +64,22 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
           </div>
         </div>
 
-        {(isPartial || isPaid) && (
-          <div className="text-xs text-muted-foreground pt-2 border-t">
-            {isPaid && '✓ Pagado completamente'}
-            {isPartial &&
-              `Anticipo: ${formatCurrency(order.payments.reduce((sum, p) => sum + p.amount, 0))}`}
+        {order.paymentStatus !== 'pending' && (
+          <div className="pt-2 border-t space-y-1">
+            <div className="flex justify-between text-xs">
+              <span className="text-green-700 font-medium">Pagado: {formatCurrency(totalPaid)}</span>
+              {order.paymentStatus === 'partial' && (
+                <span className="text-red-700 font-medium">Pendiente: {formatCurrency(remainingBalance)}</span>
+              )}
+            </div>
+            {order.paymentStatus === 'partial' && (
+              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-green-500"
+                  style={{ width: `${(totalPaid / order.estimatedCost) * 100}%` }}
+                />
+              </div>
+            )}
           </div>
         )}
       </div>

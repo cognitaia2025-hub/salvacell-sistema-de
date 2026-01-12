@@ -64,7 +64,9 @@ function Dashboard() {
       (o) => !['delivered', 'cancelled'].includes(o.status)
     ).length,
     repaired: ordersList.filter((o) => o.status === 'repaired').length,
-    urgent: ordersList.filter((o) => o.priority === 'urgent').length
+    urgent: ordersList.filter((o) => o.priority === 'urgent').length,
+    pendingPayment: ordersList.filter((o) => o.paymentStatus === 'pending').length,
+    partialPayment: ordersList.filter((o) => o.paymentStatus === 'partial').length
   }
 
   const lowStockItems = inventoryList.filter((item) => item.currentStock < item.minStock)
@@ -158,13 +160,18 @@ function Dashboard() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-lg border border-red-200">
-                <div className="text-sm font-medium text-red-700 mb-1">
-                  Urgentes
+              <div className="bg-gradient-to-br from-amber-50 to-amber-100 p-6 rounded-lg border border-amber-200">
+                <div className="text-sm font-medium text-amber-700 mb-1">
+                  Pagos Pendientes
                 </div>
-                <div className="text-3xl font-bold text-red-900">
-                  {stats.urgent}
+                <div className="text-3xl font-bold text-amber-900">
+                  {stats.pendingPayment}
                 </div>
+                {stats.partialPayment > 0 && (
+                  <div className="text-xs text-amber-700 mt-1">
+                    +{stats.partialPayment} parciales
+                  </div>
+                )}
               </div>
             </div>
 
