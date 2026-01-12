@@ -15,6 +15,7 @@ import { OrderDetailsDialog } from '@/components/OrderDetailsDialog'
 import { NewOrderDialog } from '@/components/NewOrderDialog'
 import { InventoryModule } from '@/components/InventoryModule'
 import { ClientsModule } from '@/components/ClientsModule'
+import { DatabaseDemo } from '@/components/DatabaseDemo'
 import type { Order, InventoryItem } from '@/lib/types'
 import { MOCK_ORDERS, MOCK_INVENTORY } from '@/lib/mock-data'
 import {
@@ -26,10 +27,11 @@ import {
   Plus,
   MagnifyingGlass,
   WarningCircle,
-  Users
+  Users,
+  Database
 } from '@phosphor-icons/react'
 
-type ViewMode = 'dashboard' | 'orders' | 'clients' | 'inventory' | 'reports' | 'settings'
+type ViewMode = 'dashboard' | 'orders' | 'clients' | 'inventory' | 'reports' | 'settings' | 'database'
 
 function Dashboard() {
   const [orders, setOrders] = useKV<Order[]>('orders', MOCK_ORDERS)
@@ -115,6 +117,10 @@ function Dashboard() {
               <TabsTrigger value="inventory" className="gap-2">
                 <Archive size={18} />
                 <span className="hidden md:inline">Inventario</span>
+              </TabsTrigger>
+              <TabsTrigger value="database" className="gap-2">
+                <Database size={18} />
+                <span className="hidden md:inline">Base de Datos</span>
               </TabsTrigger>
               <TabsTrigger value="reports" className="gap-2">
                 <ChartBar size={18} />
@@ -288,6 +294,8 @@ function Dashboard() {
         {viewMode === 'clients' && <ClientsModule />}
 
         {viewMode === 'inventory' && <InventoryModule />}
+
+        {viewMode === 'database' && <DatabaseDemo />}
 
         {viewMode === 'reports' && (
           <div className="text-center py-12">

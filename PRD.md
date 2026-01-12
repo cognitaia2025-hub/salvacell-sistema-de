@@ -1,6 +1,6 @@
 # Planning Guide
 
-Sistema de gestión integral para taller de reparación de dispositivos móviles que digitaliza y optimiza el proceso completo desde la recepción hasta la entrega, con seguimiento en tiempo real vía QR y gestión de inventario.
+Sistema de gestión integral para taller de reparación de dispositivos móviles que digitaliza y optimiza el proceso completo desde la recepción hasta la entrega, con seguimiento en tiempo real vía QR y gestión de inventario. **Arquitectura de base de datos relacional PostgreSQL-compliant** con tablas normalizadas, integridad referencial y soporte completo para relaciones padre-hijo.
 
 **Experience Qualities**:
 1. **Eficiente** - El sistema debe permitir registro rápido de órdenes y cambios de estado con mínimos clics, optimizado para el ritmo acelerado de un taller.
@@ -8,9 +8,25 @@ Sistema de gestión integral para taller de reparación de dispositivos móviles
 3. **Confiable** - La información crítica (datos de cliente, equipos, pagos) debe persistir de forma segura con respaldo automático y sin pérdidas.
 
 **Complexity Level**: Complex Application (advanced functionality, likely with multiple views)
-- El sistema requiere múltiples módulos interconectados: gestión de órdenes, clientes, inventario, reportes, roles de usuario, página pública de consulta QR, notificaciones automatizadas, y flujos complejos como pagos parciales y seguimiento de estado con fotografías.
+- El sistema requiere múltiples módulos interconectados: gestión de órdenes, clientes, inventario, reportes, roles de usuario, página pública de consulta QR, notificaciones automatizadas, y flujos complejos como pagos parciales y seguimiento de estado con fotografías. **Implementación con arquitectura de base de datos relacional** con 8 tablas normalizadas (clients, devices, orders, order_history, order_photos, payments, inventory_items, inventory_movements) con foreign keys y validación de integridad referencial.
 
 ## Essential Features
+
+### Arquitectura de Base de Datos Relacional ✅ IMPLEMENTADO
+- **Functionality**: Sistema de base de datos normalizado con 8 tablas interrelacionadas: `clients` (datos de contacto), `devices` (equipos por cliente), `orders` (órdenes de reparación), `order_history` (historial de cambios de estado), `order_photos` (evidencias fotográficas), `payments` (registros de pago), `inventory_items` (catálogo de repuestos), `inventory_movements` (movimientos de stock). Integridad referencial con foreign keys, validaciones automáticas, y cascadas de actualización.
+- **Purpose**: Estructura de datos profesional que permite relaciones complejas, consultas JOIN eficientes, integridad de datos garantizada y escalabilidad futura para migración a PostgreSQL real sin cambios en la lógica de negocio.
+- **Trigger**: Sistema inicializado al arranque de la aplicación, con migración automática de datos legacy si existen.
+- **Progression**: App inicia → Carga capa de abstracción de BD → Valida esquema → Ejecuta migraciones pendientes → API relacional disponible para todos los módulos.
+- **Success criteria**: Foreign keys validadas en cada operación, queries relacionales ejecutadas correctamente (JOIN entre orders-clients-devices), integridad referencial mantenida (no se puede eliminar un cliente con órdenes activas), agregaciones y estadísticas calculadas desde múltiples tablas relacionadas.
+- **Estado Actual**: ✅ COMPLETADO
+  - ✅ Esquema completo definido con TypeScript interfaces
+  - ✅ Clase RelationalDB con métodos CRUD para todas las tablas
+  - ✅ Validación de foreign keys en inserts/updates
+  - ✅ Métodos de relación (getOrderWithRelations, getClientWithStats)
+  - ✅ Actualización automática de agregados (totales de pago, stock)
+  - ✅ Búsquedas relacionales (buscar órdenes por cliente, device, etc.)
+  - ✅ Sistema de migraciones desde formato legacy
+  - ✅ Mappers para compatibilidad con componentes existentes
 
 ### Gestión de Órdenes de Reparación
 - **Functionality**: Crear, editar y seguir el ciclo completo de una orden desde recepción hasta entrega, incluyendo datos del cliente, dispositivo, diagnóstico, costos, estado actual, fotografías de evidencia y generación automática de folio con QR.
