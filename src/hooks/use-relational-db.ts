@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { db } from '@/lib/database/db'
+import { ordersAPI, clientsAPI, inventoryAPI, type OrderCreateData, type OrderUpdateData } from '@/lib/api'
 import type { DBOrder, DBClient, DBInventoryItem } from '@/lib/database/schema'
 
 export function useRelationalDB() {
@@ -7,13 +7,19 @@ export function useRelationalDB() {
 
   useEffect(() => {
     const init = async () => {
-      await db.getAllClients()
-      setIsInitialized(true)
+      try {
+        // Check API connection
+        await fetch('/api/health').catch(() => {})
+        setIsInitialized(true)
+      } catch (error) {
+        console.error('Failed to initialize:', error)
+        setIsInitialized(true) // Continue anyway
+      }
     }
     init()
   }, [])
 
-  return { isInitialized, db }
+  return { isInitialized }
 }
 
 export function useOrders() {
@@ -23,7 +29,7 @@ export function useOrders() {
   const loadOrders = useCallback(async () => {
     setLoading(true)
     try {
-      const allOrders = await db.getAllOrders()
+      const allOrders = await ordersAPI.getAll()
       setOrders(allOrders)
     } catch (error) {
       console.error('Failed to load orders:', error)
@@ -36,14 +42,14 @@ export function useOrders() {
     loadOrders()
   }, [loadOrders])
 
-  const createOrder = useCallback(async (orderData: Parameters<typeof db.insertOrder>[0]) => {
-    const newOrder = await db.insertOrder(orderData)
+  const createOrder = useCallback(async (orderData: OrderCreateData) => {
+    const newOrder = await ordersAPI.create(orderData)
     await loadOrders()
     return newOrder
   }, [loadOrders])
 
-  const updateOrder = useCallback(async (orderId: string, updates: Parameters<typeof db.updateOrder>[1]) => {
-    const updated = await db.updateOrder(orderId, updates)
+  const updateOrder = useCallback(async (orderId: string, updates: OrderUpdateData) => {
+    const updated = await ordersAPI.update(orderId, updates)
     await loadOrders()
     return updated
   }, [loadOrders])

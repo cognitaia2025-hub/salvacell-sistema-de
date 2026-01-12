@@ -1,23 +1,30 @@
 # SalvaCell - Sistema de Gestión de Reparaciones
 
-Sistema integral de gestión para talleres de reparación de dispositivos móviles con arquitectura de base de datos relacional PostgreSQL-compliant.
+Sistema integral de gestión para talleres de reparación de dispositivos móviles con arquitectura **frontend React + backend Python FastAPI**.
 
-## 🏗️ Arquitectura de Base de Datos
+## 🏗️ Arquitectura
 
-Este sistema implementa una **arquitectura de base de datos relacional normalizada** con 8 tablas interconectadas que mantienen integridad referencial mediante foreign keys:
-
-### Tablas Principales
-
-1. **clients** - Información de contacto de clientes
-2. **devices** - Dispositivos registrados por cliente (1:N con clients)
-3. **orders** - Órdenes de reparación (N:1 con clients y devices)
-4. **order_history** - Historial de cambios de estado (1:N con orders)
-5. **order_photos** - Fotografías de evidencia (1:N con orders)
-6. **payments** - Registro de pagos y anticipos (1:N con orders)
-7. **inventory_items** - Catálogo de repuestos
-8. **inventory_movements** - Movimientos de inventario (1:N con inventory_items)
-
-Ver documentación completa en [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)
+```
+┌─────────────────────────────────┐
+│   Frontend (React + TypeScript) │
+│   - PWA instalable              │
+│   - UI con shadcn/ui            │
+│   - Estado con React Query      │
+└──────────────┬──────────────────┘
+               │ REST API
+┌──────────────▼──────────────────┐
+│   Backend (Python + FastAPI)    │
+│   - JWT Authentication          │
+│   - SQLAlchemy ORM              │
+│   - Celery para tareas async    │
+└──────────────┬──────────────────┘
+               │
+┌──────────────▼──────────────────┐
+│     PostgreSQL + Redis          │
+│   - Datos relacionales          │
+│   - Caché y cola de tareas      │
+└─────────────────────────────────┘
+```
 
 ## 🎯 Características Principales
 
@@ -25,7 +32,7 @@ Ver documentación completa en [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)
 - Creación de órdenes multi-paso con validaciones
 - Búsqueda por folio, cliente, teléfono, IMEI
 - Generación automática de QR único
-- 7 estados del ciclo de vida: Recibido → Diagnóstico → Esperando repuestos → En reparación → Reparado → Entregado/Cancelado
+- 7 estados del ciclo de vida
 - Historial completo con timeline visual
 - Sistema de carga de fotografías de evidencia
 - Prioridad normal/urgente
@@ -36,7 +43,6 @@ Ver documentación completa en [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)
 - Badges de cliente: VIP (>5 órdenes), Frecuente (3-5), Primera visita
 - Estadísticas: total de visitas, total gastado, promedio
 - Vista de equipos registrados por cliente
-- Soporte para teléfono principal, alterno y contacto alterno
 
 ### ✅ Gestión de Inventario
 - Catálogo completo con SKU, precios, stock
@@ -44,208 +50,260 @@ Ver documentación completa en [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)
 - Alertas de stock bajo/sin stock
 - Estadísticas en tiempo real
 - Historial completo de movimientos
-- Filtros por categoría y estado
 
-### ✅ Sistema de Pagos
-- Anticipos y pagos parciales
-- Tres métodos: efectivo, tarjeta, transferencia
-- Cálculo automático de saldo pendiente
-- Estados: pendiente → parcial → pagado
-- Historial completo con timestamps
+### ✅ Sistema de Autenticación
+- Login con JWT tokens
+- 4 roles: Administrador, Técnico, Recepcionista, Bodeguero
+- Control de acceso por endpoints
+- Sesiones persistentes
 
 ### ✅ Consulta Pública QR
 - Página sin autenticación para clientes
 - Barra de progreso visual
 - Estado actualizado en tiempo real
 - Diseño responsive mobile-first
-- Reglamento del taller
-- Información de contacto
 
-## 🔧 Stack Tecnológico
+## 🚀 Inicio Rápido
 
-- **Frontend**: React 19 + TypeScript
-- **Styling**: Tailwind CSS v4
-- **Components**: shadcn/ui v4
-- **Icons**: Phosphor Icons
-- **State**: React Hooks + Spark KV (con capa relacional)
-- **Forms**: React Hook Form + Zod
-- **Build**: Vite
-- **Database Layer**: Arquitectura relacional con integridad referencial
-
-## 📦 Instalación
+### **Opción 1: Docker Compose (Recomendado)**
 
 ```bash
-npm install
+# 1. Clonar repositorio y configurar
+git clone <repo>
+cd spark-template
+cp .env.example .env
+
+# 2. Iniciar todos los servicios
+docker-compose up -d
+
+# 3. Crear usuario administrador
+docker-compose exec backend python create_admin.py
+
+# 4. Acceder a la aplicación
+# Frontend: http://localhost:5173
+# Backend API: http://localhost:8000/docs
 ```
 
-## 🚀 Desarrollo
+Credenciales iniciales: `admin` / `password`
 
+### **Opción 2: Desarrollo Local**
+
+#### Backend
 ```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env
+# Editar .env con tus configuraciones
+
+# Iniciar PostgreSQL y Redis
+docker-compose up -d db redis
+
+# Crear usuario admin
+python create_admin.py
+
+# Iniciar servidor
+uvicorn main:app --reload
+```
+
+Backend disponible en http://localhost:8000
+
+#### Frontend
+```bash
+# En la raíz del proyecto
+npm install
+cp .env.example .env
 npm run dev
 ```
 
-## 🗃️ Uso de la Base de Datos Relacional
+Frontend disponible en http://localhost:5173
 
-### API Directa
+## 📁 Estructura del Proyecto
 
-```typescript
-import { db } from '@/lib/database/db'
-
-// Crear cliente
-const client = await db.insertClient({
-  name: "Juan Pérez",
-  phone: "5551234567",
-  email: "juan@example.com"
-})
-
-// Crear dispositivo del cliente
-const device = await db.insertDevice({
-  clientId: client.id,
-  brand: "Samsung",
-  model: "Galaxy S21",
-  imei: "123456789012345"
-})
-
-// Crear orden
-const order = await db.insertOrder({
-  folio: "ORD-2024-001",
-  clientId: client.id,
-  deviceId: device.id,
-  status: "received",
-  priority: "normal",
-  problemDescription: "Pantalla rota",
-  services: "Reemplazo de pantalla",
-  estimatedCost: 1500,
-  estimatedDelivery: "2024-02-01",
-  paymentStatus: "pending",
-  totalAmount: 1500,
-  paidAmount: 0
-})
-
-// Obtener orden completa con relaciones (JOIN)
-const fullOrder = await db.getOrderWithRelations(order.id)
-console.log(fullOrder.client.name) // "Juan Pérez"
-console.log(fullOrder.device.brand) // "Samsung"
-console.log(fullOrder.history.length) // Historial completo
+```
+spark-template/
+├── backend/                    # Backend Python FastAPI
+│   ├── models/                # Modelos SQLAlchemy (8 tablas)
+│   ├── schemas/               # Schemas Pydantic
+│   ├── routers/               # Endpoints API
+│   │   ├── auth.py           # Autenticación
+│   │   ├── clients.py        # Clientes
+│   │   ├── orders.py         # Órdenes
+│   │   └── inventory.py      # Inventario
+│   ├── main.py               # FastAPI app
+│   ├── database.py           # Conexión DB
+│   ├── auth.py               # JWT & seguridad
+│   ├── celery_worker.py      # Tareas asíncronas
+│   └── create_admin.py       # Script inicial
+├── src/                       # Frontend React
+│   ├── components/           # Componentes UI
+│   ├── hooks/                # React hooks
+│   │   ├── use-auth.ts      # Hook de autenticación
+│   │   └── use-relational-db.ts  # Hooks de datos
+│   ├── lib/
+│   │   ├── api/             # Cliente API REST
+│   │   │   ├── client.ts   # HTTP client
+│   │   │   ├── auth.ts     # API auth
+│   │   │   ├── clients.ts  # API clientes
+│   │   │   ├── orders.ts   # API órdenes
+│   │   │   └── inventory.ts # API inventario
+│   │   └── database/        # (Legacy - tipos)
+│   └── App.tsx              # App principal
+├── docker-compose.yml        # Stack completo
+├── BRD.md                    # Requisitos de negocio
+└── README.md                 # Este archivo
 ```
 
-### React Hooks
+## 🔧 Stack Tecnológico
 
-```typescript
-import { useOrders, useClients, useInventory } from '@/hooks/use-relational-db'
+### Backend
+- **Framework:** Python 3.11 + FastAPI 0.110
+- **Base de Datos:** PostgreSQL 15 con SQLAlchemy async
+- **Cache/Queue:** Redis 7
+- **Auth:** JWT (python-jose)
+- **Tasks:** Celery + Celery Beat
+- **Validación:** Pydantic v2
 
-function MyComponent() {
-  const { orders, createOrder, updateOrder, loading } = useOrders()
-  const { clients, searchClients } = useClients()
-  const { items, addMovement, getStats } = useInventory()
-
-  // Crear orden
-  const handleCreateOrder = async () => {
-    await createOrder({
-      folio: "ORD-001",
-      clientId: "client_123",
-      deviceId: "device_456",
-      // ...más campos
-    })
-  }
-
-  return <div>...</div>
-}
-```
-
-## 🔄 Migración de Datos
-
-Si tienes datos en el formato anterior, ejecuta la migración:
-
-```typescript
-import { migrateFromKVToRelationalDB } from '@/lib/database/migrations'
-
-await migrateFromKVToRelationalDB()
-```
-
-## 📊 Consultas Relacionales
-
-### Buscar órdenes con datos relacionados
-```typescript
-// Busca en orders, clients y devices simultáneamente
-const results = await db.searchOrders("Samsung")
-```
-
-### Obtener cliente con estadísticas
-```typescript
-// Calcula totales, cuenta órdenes, determina tier
-const clientStats = await db.getClientWithStats(clientId)
-console.log(clientStats.tier) // "vip", "frequent", "new"
-console.log(clientStats.totalSpent)
-console.log(clientStats.orders) // Todas las órdenes del cliente
-```
-
-### Estadísticas de inventario
-```typescript
-const stats = await db.getInventoryStats()
-console.log(stats.totalValue)
-console.log(stats.lowStockItems)
-console.log(stats.outOfStockItems)
-```
-
-## 🔐 Integridad Referencial
-
-El sistema valida automáticamente:
-- ✅ No puedes crear una orden sin un cliente válido
-- ✅ No puedes crear una orden sin un dispositivo válido
-- ✅ No puedes eliminar un cliente con órdenes activas
-- ✅ Los pagos actualizan automáticamente el estado de pago de la orden
-- ✅ Los movimientos de inventario actualizan el stock automáticamente
-- ✅ Los cambios de estado crean entradas en el historial automáticamente
-
-## 📱 Características de la Interfaz
-
-### Diseño
-- Color primario: Azul tecnológico `oklch(0.45 0.15 250)`
-- Color de acento: Naranja energético `oklch(0.68 0.18 40)`
-- Tipografía: Inter (UI) + Space Grotesk (Headers)
-- Border radius: 10px
-- Contraste WCAG AA compliant
-
-### Componentes
-- Formularios multi-paso con validación
-- Timeline visual de historial
-- Cards con hover effects
-- Badges de estado con colores distintivos
-- Sistema de notificaciones con Sonner
-- Tablas responsivas con ordenamiento
-- Búsqueda en tiempo real
-
-## 🎨 Paleta de Colores
-
-```css
-:root {
-  --primary: oklch(0.45 0.15 250);        /* Azul tecnológico */
-  --accent: oklch(0.68 0.18 40);          /* Naranja energético */
-  --success: oklch(0.60 0.15 145);        /* Verde técnico */
-  --warning: oklch(0.75 0.14 85);         /* Amarillo ámbar */
-  --destructive: oklch(0.55 0.22 25);     /* Rojo controlado */
-}
-```
+### Frontend
+- **Framework:** React 19 + TypeScript
+- **Build:** Vite
+- **Styling:** Tailwind CSS v4
+- **Components:** shadcn/ui v4
+- **State:** React Query (TanStack Query)
+- **Forms:** React Hook Form + Zod
+- **Icons:** Phosphor Icons
 
 ## 📖 Documentación
 
-- [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md) - Esquema completo de la base de datos
-- [PRD.md](./PRD.md) - Product Requirements Document
+- [Backend README](backend/README.md) - Guía completa del backend
+- [Frontend Integration](FRONTEND_INTEGRATION.md) - Guía de integración
+- [BRD](BRD.md) - Documento de requisitos de negocio
+- [API Docs](http://localhost:8000/docs) - Swagger UI (cuando esté corriendo)
 
-## 🔮 Roadmap
+## 🔑 API Endpoints
 
-- [ ] Vinculación de salidas de inventario a órdenes específicas
-- [ ] Sistema de notificaciones automáticas (SMS/WhatsApp)
-- [ ] Reportes avanzados y analítica
-- [ ] Control de acceso por roles
-- [ ] Generación de PDFs (tickets, facturas)
-- [ ] Migración a PostgreSQL real
+### Autenticación
+- `POST /auth/login` - Iniciar sesión
+- `POST /auth/register` - Registrar usuario (admin only)
+- `GET /auth/me` - Obtener usuario actual
+
+### Clientes
+- `GET /clients` - Listar clientes
+- `POST /clients` - Crear cliente
+- `GET /clients/{id}` - Obtener cliente con estadísticas
+- `PUT /clients/{id}` - Actualizar cliente
+
+### Órdenes
+- `GET /orders` - Listar órdenes
+- `POST /orders` - Crear orden
+- `GET /orders/{id}` - Obtener orden
+- `GET /orders/qr/{qr_code}` - Vista pública (no auth)
+- `PUT /orders/{id}` - Actualizar orden
+
+### Inventario
+- `GET /inventory/items` - Listar items
+- `POST /inventory/items` - Crear item
+- `POST /inventory/movements` - Registrar movimiento
+
+Ver documentación completa en http://localhost:8000/docs
+
+## 🗃️ Base de Datos
+
+### Esquema (8 tablas relacionales)
+
+```sql
+clients (id, name, phone, email, ...)
+  └─→ devices (id, client_id, brand, model, imei, ...)
+       └─→ orders (id, client_id, device_id, folio, qr_code, status, ...)
+            ├─→ order_history (id, order_id, status, notes, ...)
+            ├─→ order_photos (id, order_id, file_path, ...)
+            └─→ payments (id, order_id, amount, method, ...)
+
+inventory_items (id, sku, name, stock, ...)
+  └─→ inventory_movements (id, item_id, type, quantity, ...)
+
+users (id, username, email, role, ...)
+```
+
+## 🔐 Roles y Permisos
+
+- **Administrador**: Acceso completo al sistema
+- **Técnico**: Gestión de órdenes e inventario
+- **Recepcionista**: Recepción y entrega de órdenes, gestión de clientes
+- **Bodeguero**: Solo gestión de inventario
+
+## 🚢 Deployment
+
+### Desarrollo
+```bash
+docker-compose up -d
+```
+
+### Producción
+
+**Backend:**
+- Railway / DigitalOcean / AWS
+- Configurar variables de entorno
+- Usar PostgreSQL managed (Neon/Supabase)
+
+**Frontend:**
+- Vercel / Netlify
+- Build: `npm run build`
+- Configurar `VITE_API_URL` apuntando a producción
+
+Ver [backend/README.md](backend/README.md) para más detalles.
+
+## 🐛 Troubleshooting
+
+### "Failed to fetch" en frontend
+- Verificar que backend esté corriendo en puerto 8000
+- Revisar `VITE_API_URL` en `.env`
+- Verificar CORS en `backend/config.py`
+
+### "401 Unauthorized"
+- Token expirado → Hacer logout y login
+- Verificar que las credenciales sean correctas
+
+### "Connection refused"
+- PostgreSQL no está corriendo
+- Redis no está corriendo
+- Verificar puertos (5432, 6379, 8000)
+
+## 📝 TODO
+
+### Backend
+- [ ] Implementar Alembic para migraciones
+- [ ] Agregar tests unitarios
+- [ ] Integración con Twilio (WhatsApp/SMS)
+- [ ] Generación de PDFs con ReportLab
+- [ ] Upload de imágenes a S3
+- [ ] WebSockets para actualizaciones en tiempo real
+
+### Frontend
+- [ ] Implementar offline mode (PWA)
+- [ ] Agregar modo oscuro
+- [ ] Crear dashboard de métricas
+- [ ] Implementar búsqueda avanzada con filtros
+- [ ] Agregar exportación a Excel/PDF
+
+## 🤝 Contribuir
+
+1. Fork el proyecto
+2. Crea una rama (`git checkout -b feature/nueva-funcionalidad`)
+3. Commit cambios (`git commit -m 'Agregar nueva funcionalidad'`)
+4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
+5. Abre un Pull Request
 
 ## 📄 Licencia
 
-MIT
+Ver archivo [LICENSE](LICENSE)
+
+## 📞 Soporte
+
+Para preguntas o reportar bugs, abre un issue en el repositorio.
 
 ---
 
-**Desarrollado con ❤️ para talleres de reparación profesionales**
+**Versión**: 1.0.0  
+**Última actualización**: Enero 12, 2026
