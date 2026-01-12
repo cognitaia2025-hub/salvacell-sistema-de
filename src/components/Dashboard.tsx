@@ -16,6 +16,8 @@ import { NewOrderDialog } from '@/components/NewOrderDialog'
 import { InventoryModule } from '@/components/InventoryModule'
 import { ClientsModule } from '@/components/ClientsModule'
 import { DatabaseDemo } from '@/components/DatabaseDemo'
+import { ReportsModule } from '@/components/ReportsModule'
+import { SettingsModule } from '@/components/SettingsModule'
 import type { Order, InventoryItem } from '@/lib/types'
 import { MOCK_ORDERS, MOCK_INVENTORY } from '@/lib/mock-data'
 import {
@@ -297,25 +299,9 @@ function Dashboard() {
 
         {viewMode === 'database' && <DatabaseDemo />}
 
-        {viewMode === 'reports' && (
-          <div className="text-center py-12">
-            <ChartBar size={48} className="mx-auto text-muted-foreground mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Módulo de Reportes</h2>
-            <p className="text-muted-foreground">
-              Análisis y reportes del negocio próximamente
-            </p>
-          </div>
-        )}
+        {viewMode === 'reports' && <ReportsModule />}
 
-        {viewMode === 'settings' && (
-          <div className="text-center py-12">
-            <GearSix size={48} className="mx-auto text-muted-foreground mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Configuración</h2>
-            <p className="text-muted-foreground">
-              Ajustes del sistema próximamente
-            </p>
-          </div>
-        )}
+        {viewMode === 'settings' && <SettingsModule />}
       </main>
 
       {selectedOrder && (
