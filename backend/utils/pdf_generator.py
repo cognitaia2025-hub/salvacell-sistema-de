@@ -81,7 +81,8 @@ class PDFGenerator:
     def create_footer(self, canvas, doc):
         """Crear pie de página"""
         canvas.saveState()
-        footer_text = f"Generado el {datetime.now().strftime('%d/%m/%Y %H:%M')} - Página {doc.page}"
+        page_num = canvas.getPageNumber()
+        footer_text = f"Generado el {datetime.now().strftime('%d/%m/%Y %H:%M')} - Página {page_num}"
         canvas.setFont('Helvetica', 8)
         canvas.setFillColor(colors.grey)
         canvas.drawCentredString(
