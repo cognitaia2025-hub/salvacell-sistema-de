@@ -27,7 +27,7 @@ export function WebSocketProvider({
   children,
   url = 'ws://localhost:8000/ws/connect',
   token,
-  autoConnect = true,
+  autoConnect = false,  // Temporarily disabled until backend WebSocket is fixed
 }: WebSocketProviderProps) {
   const [status, setStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED)
   const clientRef = useRef<WebSocketClient | null>(null)

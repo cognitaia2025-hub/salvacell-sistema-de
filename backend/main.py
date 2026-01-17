@@ -17,7 +17,7 @@ from routers import (
     payments,
     photos,
     export,
-    websocket as ws_router,
+    # websocket as ws_router,  # Temporarily disabled due to dependency issues
 )
 
 
@@ -74,7 +74,7 @@ app.include_router(reports.router)
 app.include_router(payments.router)
 app.include_router(photos.router)
 app.include_router(export.router)
-app.include_router(ws_router.router, prefix="/ws", tags=["websocket"])
+# app.include_router(ws_router.router, prefix="/ws", tags=["websocket"])  # Temporarily disabled
 
 
 @app.get("/")
