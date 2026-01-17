@@ -25,6 +25,15 @@ AsyncSessionLocal = async_sessionmaker(
 Base = declarative_base()
 
 
+# Function for Alembic migrations
+def get_db_for_migrations():
+    """Conexión síncrona para Alembic"""
+    from sqlalchemy import create_engine
+    from config import settings
+    sync_url = settings.DATABASE_URL.replace("+asyncpg", "")
+    return create_engine(sync_url)
+
+
 # Dependency for FastAPI
 async def get_db() -> AsyncSession:
     async with AsyncSessionLocal() as session:
