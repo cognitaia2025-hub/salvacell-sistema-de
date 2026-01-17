@@ -1,5 +1,6 @@
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
+from sqlalchemy.engine.url import make_url
 from alembic import context
 import os
 import sys
@@ -12,8 +13,13 @@ from models import Base  # Importa todos los modelos
 
 config = context.config
 
+# Parse URL and convert from async to sync driver
+url = make_url(settings.DATABASE_URL)
+if url.drivername == "postgresql+asyncpg":
+    url = url.set(drivername="postgresql+psycopg")
+
 # Sobrescribir la URL desde settings
-config.set_main_option('sqlalchemy.url', settings.DATABASE_URL.replace("+asyncpg", ""))
+config.set_main_option('sqlalchemy.url', str(url))
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
