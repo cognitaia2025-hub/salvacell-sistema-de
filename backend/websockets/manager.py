@@ -1,5 +1,5 @@
 from fastapi import WebSocket
-from typing import Dict, Set, List
+from typing import Dict, Set, List, Optional
 from datetime import datetime
 import json
 import logging
@@ -22,7 +22,7 @@ class WebSocketManager:
         # Rooms: {room_name: Set[connection_id]}
         self.rooms: Dict[str, Set[str]] = {}
         
-    async def connect(self, websocket: WebSocket, connection_id: str, user_id: str = None):
+    async def connect(self, websocket: WebSocket, connection_id: str, user_id: Optional[str] = None):
         """Conectar un nuevo cliente"""
         await websocket.accept()
         self.active_connections[connection_id] = websocket

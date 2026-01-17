@@ -31,15 +31,12 @@ export function WebSocketProvider({
 }: WebSocketProviderProps) {
   const [status, setStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED)
   const clientRef = useRef<WebSocketClient | null>(null)
-  
-  // Store config in ref to avoid reconnections when token changes
-  const configRef = useRef({ url, token, autoConnect })
 
   useEffect(() => {
-    // Update config ref
-    configRef.current = { url, token, autoConnect }
-    
     // Create WebSocket client only once
+    // Note: If you need to update url/token dynamically, you'll need to
+    // disconnect and recreate the client. Current implementation creates
+    // the connection once on mount for stability.
     if (!clientRef.current) {
       const client = new WebSocketClient({
         url,
@@ -67,7 +64,7 @@ export function WebSocketProvider({
         clientRef.current = null
       }
     }
-  }, []) // Empty deps - only run once
+  }, []) // Empty deps - create connection once for stability
 
   const subscribe = (eventType: EventType, handler: EventHandler) => {
     if (!clientRef.current) {

@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useRef } from 'react'
-import { EventType, EventHandler } from '@/lib/websocket/types'
+import { EventType, EventHandler, WebSocketEvent } from '@/lib/websocket/types'
 import { useWebSocketContext } from '@/contexts/WebSocketContext'
 
 /**
@@ -30,7 +30,7 @@ export function useWebSocket(eventType: EventType, handler: EventHandler) {
     }
 
     // Use stable handler from ref
-    const stableHandler = (event: any) => handlerRef.current(event)
+    const stableHandler = (event: WebSocketEvent) => handlerRef.current(event)
     const unsubscribe = subscribe(eventType, stableHandler)
 
     return () => {
@@ -63,7 +63,7 @@ export function useWebSocketEvents(handlers: Partial<Record<EventType, EventHand
     const unsubscribers = Object.entries(handlersRef.current).map(([eventType, handler]) => {
       if (typeof handler === 'function') {
         // Wrap handler to use latest version from ref
-        const stableHandler = (event: any) => {
+        const stableHandler = (event: WebSocketEvent) => {
           const currentHandler = handlersRef.current[eventType as EventType]
           if (typeof currentHandler === 'function') {
             currentHandler(event)
