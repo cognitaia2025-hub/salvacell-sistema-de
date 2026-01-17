@@ -6,14 +6,14 @@ import {
 } from '@/lib/api'
 import {
   Users,
-  Activity,
+  Gauge as Activity,
   TrendUp,
   Clock,
-  AlertCircle,
+  WarningCircle as AlertCircle,
   CheckCircle,
-  DollarSign,
+  CurrencyCircleDollar as DollarSign,
   Star,
-  Server,
+  Desktop as Server,
   Gauge,
   SpinnerGap
 } from '@phosphor-icons/react'
