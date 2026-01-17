@@ -28,7 +28,7 @@ class S3Service:
     def client(self):
         """Lazy initialization of S3 client"""
         if not self._is_configured:
-            raise ValueError("S3 is not properly configured. Check S3_BUCKET, S3_ACCESS_KEY, and S3_SECRET_KEY settings.")
+            raise ValueError("S3 is not properly configured. Check S3_BUCKET, S3_REGION, S3_ACCESS_KEY, and S3_SECRET_KEY settings.")
         
         if self._client is None:
             self._client = boto3.client(
