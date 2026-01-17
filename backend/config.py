@@ -58,6 +58,13 @@ class Settings(BaseSettings):
     # Public URL
     PUBLIC_URL: str = "http://localhost:5173"
     
+    # PDF Settings
+    PDF_LOGO_PATH: str = "./static/logos/salvacell_logo.png"
+    PDF_COMPANY_NAME: str = "SalvaCell"
+    PDF_COMPANY_ADDRESS: str = "Calle Principal #123, Ciudad"
+    PDF_COMPANY_PHONE: str = "+52 123 456 7890"
+    PDF_COMPANY_EMAIL: str = "contacto@salvacell.com"
+    
     class Config:
         env_file = ".env"
         case_sensitive = True
