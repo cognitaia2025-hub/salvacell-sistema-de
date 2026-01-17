@@ -293,7 +293,7 @@ ruff check .
 - [ ] Agregar tests unitarios
 - [ ] Integración con Twilio (WhatsApp)
 - [ ] Generación de PDFs con ReportLab
-- [ ] Upload de imágenes a S3
+- [x] Upload de imágenes a S3 (Ver docs/PLAN-06-s3-image-upload-IMPLEMENTATION.md)
 - [ ] Endpoints de reportes y estadísticas
 - [ ] WebSockets para actualizaciones en tiempo real
 - [ ] Rate limiting con Redis
