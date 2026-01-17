@@ -54,6 +54,11 @@ async def save_upload_file(upload_file: UploadFile, order_id: str) -> tuple[str,
             )
         
         try:
+            # Get file size before upload
+            await upload_file.seek(0, 2)  # Seek to end
+            file_size = await upload_file.tell()
+            await upload_file.seek(0)  # Reset to beginning
+            
             # Generate S3 key
             s3_key = f"order-photos/{order_id}/{unique_filename}"
             
@@ -66,10 +71,6 @@ async def save_upload_file(upload_file: UploadFile, order_id: str) -> tuple[str,
             
             # For S3, file_path stores the S3 key
             file_path = s3_key
-            
-            # Get file size
-            await upload_file.seek(0, 2)  # Seek to end
-            file_size = await upload_file.tell()
             
             return file_path, file_url, file_size
             
@@ -173,7 +174,11 @@ async def delete_photo(
     
     # Delete file from storage
     try:
-        if settings.STORAGE_TYPE == "s3":
+        # Detect storage type based on file_path pattern
+        # S3 keys start with "order-photos/" while local paths are absolute
+        is_s3_file = photo.file_path.startswith("order-photos/")
+        
+        if is_s3_file:
             # Delete from S3
             if s3_service.is_configured():
                 s3_service.delete_file(photo.file_path)

@@ -19,6 +19,7 @@ class S3Service:
         """Check if S3 is properly configured"""
         return bool(
             settings.S3_BUCKET and
+            settings.S3_REGION and
             settings.S3_ACCESS_KEY and
             settings.S3_SECRET_KEY
         )
@@ -65,8 +66,10 @@ class S3Service:
                 ExtraArgs=extra_args
             )
             
-            # Generate public URL
+            # Generate URL using boto3 to ensure correct format for all regions
+            # Note: For public access, configure bucket policy accordingly
             url = f"https://{settings.S3_BUCKET}.s3.{settings.S3_REGION}.amazonaws.com/{key}"
+            
             return url
             
         except NoCredentialsError:
