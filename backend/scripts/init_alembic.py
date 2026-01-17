@@ -14,7 +14,7 @@ from alembic import command
 
 
 def init_alembic():
-    """Inicializa Alembic y crea la primera migración"""
+    """Inicializa y verifica la configuración de Alembic"""
     print("🚀 Inicializando Alembic...")
     
     # Configuración de Alembic

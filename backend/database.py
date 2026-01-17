@@ -34,9 +34,28 @@ def get_db_for_migrations():
     global _migration_engine
     if _migration_engine is None:
         from sqlalchemy import create_engine
-        sync_url = settings.DATABASE_URL.replace("+asyncpg", "")
-        _migration_engine = create_engine(sync_url)
+        from sqlalchemy.engine.url import make_url
+        
+        # Parse URL and convert from async to sync driver
+        url = make_url(settings.DATABASE_URL)
+        if url.drivername == "postgresql+asyncpg":
+            url = url.set(drivername="postgresql+psycopg")
+        
+        _migration_engine = create_engine(
+            url,
+            pool_pre_ping=True,
+            pool_size=5,
+            max_overflow=10,
+        )
     return _migration_engine
+
+
+def dispose_migration_engine():
+    """Dispose of the migration engine to clean up resources"""
+    global _migration_engine
+    if _migration_engine is not None:
+        _migration_engine.dispose()
+        _migration_engine = None
 
 
 # Dependency for FastAPI
