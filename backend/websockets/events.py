@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Any, Dict, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 
@@ -31,7 +31,7 @@ class WebSocketEvent(BaseModel):
     """Modelo de evento WebSocket"""
     type: EventType
     data: Dict[str, Any]
-    timestamp: datetime = datetime.now()
+    timestamp: datetime = Field(default_factory=datetime.now)
     user_id: Optional[str] = None
     
     class Config:

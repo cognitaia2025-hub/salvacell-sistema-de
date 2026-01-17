@@ -3,14 +3,15 @@
  * Displays real-time notifications from WebSocket events
  */
 
-import { useEffect } from 'react'
+import { useMemo } from 'react'
 import { toast } from 'sonner'
 import { EventType } from '@/lib/websocket/types'
 import { useWebSocketEvents } from '@/hooks/use-websocket'
 
 export function NotificationToast() {
-  useWebSocketEvents({
-    [EventType.NOTIFICATION]: (event) => {
+  // Memoize handlers to prevent unnecessary re-subscriptions
+  const handlers = useMemo(() => ({
+    [EventType.NOTIFICATION]: (event: any) => {
       const { message, severity = 'info' } = event.data
       
       switch (severity) {
@@ -27,35 +28,37 @@ export function NotificationToast() {
           toast.info(message)
       }
     },
-    [EventType.ORDER_CREATED]: (event) => {
+    [EventType.ORDER_CREATED]: (event: any) => {
       const { folio } = event.data
       toast.success(`Nueva orden creada: ${folio}`)
     },
-    [EventType.ORDER_UPDATED]: (event) => {
+    [EventType.ORDER_UPDATED]: (event: any) => {
       const { folio } = event.data
       toast.info(`Orden actualizada: ${folio}`)
     },
-    [EventType.ORDER_STATUS_CHANGED]: (event) => {
+    [EventType.ORDER_STATUS_CHANGED]: (event: any) => {
       const { folio, status } = event.data
       toast.info(`Orden ${folio} cambió a estado: ${status}`)
     },
-    [EventType.CLIENT_CREATED]: (event) => {
+    [EventType.CLIENT_CREATED]: (event: any) => {
       const { nombre } = event.data
       toast.success(`Nuevo cliente: ${nombre}`)
     },
-    [EventType.CLIENT_UPDATED]: (event) => {
+    [EventType.CLIENT_UPDATED]: (event: any) => {
       const { nombre } = event.data
       toast.info(`Cliente actualizado: ${nombre}`)
     },
-    [EventType.INVENTORY_UPDATED]: (event) => {
+    [EventType.INVENTORY_UPDATED]: (event: any) => {
       const { nombre } = event.data
       toast.info(`Inventario actualizado: ${nombre}`)
     },
-    [EventType.STOCK_LOW]: (event) => {
+    [EventType.STOCK_LOW]: (event: any) => {
       const { nombre, cantidad } = event.data
       toast.warning(`Stock bajo: ${nombre} (${cantidad} unidades)`)
     },
-  })
+  }), [])
+
+  useWebSocketEvents(handlers)
 
   // This component doesn't render anything
   return null
