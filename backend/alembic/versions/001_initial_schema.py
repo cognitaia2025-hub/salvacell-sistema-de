@@ -23,7 +23,7 @@ def upgrade() -> None:
         sa.Column('email', sa.String(length=200), nullable=False),
         sa.Column('password_hash', sa.String(length=200), nullable=False),
         sa.Column('full_name', sa.String(length=200), nullable=True),
-        sa.Column('role', sa.Enum('ADMIN', 'TECHNICIAN', 'RECEPTIONIST', 'WAREHOUSE', name='userrole'), nullable=False),
+        sa.Column('role', sa.Enum('admin', 'technician', 'receptionist', 'warehouse', name='userrole'), nullable=False),
         sa.Column('is_active', sa.Integer(), nullable=False, server_default='1'),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
@@ -79,8 +79,8 @@ def upgrade() -> None:
         sa.Column('client_id', sa.String(length=50), nullable=False),
         sa.Column('device_id', sa.String(length=50), nullable=True),
         sa.Column('technician_id', sa.String(length=50), nullable=True),
-        sa.Column('status', sa.Enum('RECEIVED', 'DIAGNOSING', 'WAITING_PARTS', 'IN_REPAIR', 'REPAIRED', 'DELIVERED', 'CANCELLED', name='orderstatus'), nullable=False, server_default='RECEIVED'),
-        sa.Column('priority', sa.Enum('NORMAL', 'URGENT', name='orderpriority'), nullable=False, server_default='NORMAL'),
+        sa.Column('status', sa.Enum('received', 'diagnosing', 'waiting_parts', 'in_repair', 'repaired', 'delivered', 'cancelled', name='orderstatus'), nullable=False, server_default='received'),
+        sa.Column('priority', sa.Enum('normal', 'urgent', name='orderpriority'), nullable=False, server_default='normal'),
         sa.Column('problem_description', sa.Text(), nullable=False),
         sa.Column('diagnosis', sa.Text(), nullable=True),
         sa.Column('solution', sa.Text(), nullable=True),
@@ -110,7 +110,7 @@ def upgrade() -> None:
         sa.Column('id', sa.String(length=50), nullable=False),
         sa.Column('order_id', sa.String(length=50), nullable=False),
         sa.Column('user_id', sa.String(length=50), nullable=True),
-        sa.Column('status', sa.Enum('RECEIVED', 'DIAGNOSING', 'WAITING_PARTS', 'IN_REPAIR', 'REPAIRED', 'DELIVERED', 'CANCELLED', name='orderstatus'), nullable=False),
+        sa.Column('status', sa.Enum('received', 'diagnosing', 'waiting_parts', 'in_repair', 'repaired', 'delivered', 'cancelled', name='orderstatus'), nullable=False),
         sa.Column('notes', sa.Text(), nullable=True),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.ForeignKeyConstraint(['order_id'], ['orders.id'], ondelete='CASCADE'),
@@ -143,8 +143,8 @@ def upgrade() -> None:
         sa.Column('id', sa.String(length=50), nullable=False),
         sa.Column('order_id', sa.String(length=50), nullable=False),
         sa.Column('amount', sa.Numeric(precision=10, scale=2), nullable=False),
-        sa.Column('method', sa.Enum('CASH', 'CARD', 'TRANSFER', name='paymentmethod'), nullable=False),
-        sa.Column('status', sa.Enum('PENDING', 'PARTIAL', 'PAID', name='paymentstatus'), nullable=False, server_default='PENDING'),
+        sa.Column('method', sa.Enum('cash', 'card', 'transfer', name='paymentmethod'), nullable=False),
+        sa.Column('status', sa.Enum('pending', 'partial', 'paid', name='paymentstatus'), nullable=False, server_default='pending'),
         sa.Column('reference', sa.String(length=200), nullable=True),
         sa.Column('notes', sa.Text(), nullable=True),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
@@ -183,7 +183,7 @@ def upgrade() -> None:
         sa.Column('item_id', sa.String(length=50), nullable=False),
         sa.Column('user_id', sa.String(length=50), nullable=True),
         sa.Column('order_id', sa.String(length=50), nullable=True),
-        sa.Column('type', sa.Enum('ENTRY', 'EXIT', 'ADJUSTMENT', 'RETURN', name='movementtype'), nullable=False),
+        sa.Column('type', sa.Enum('entry', 'exit', 'adjustment', 'return', name='movementtype'), nullable=False),
         sa.Column('quantity', sa.Integer(), nullable=False),
         sa.Column('reason', sa.Text(), nullable=True),
         sa.Column('reference', sa.String(length=200), nullable=True),
@@ -209,7 +209,7 @@ def upgrade() -> None:
         sa.Column('scheduled_date', sa.DateTime(timezone=True), nullable=False),
         sa.Column('end_date', sa.DateTime(timezone=True), nullable=True),
         sa.Column('duration_minutes', sa.Integer(), nullable=True, server_default='60'),
-        sa.Column('status', sa.Enum('SCHEDULED', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'NO_SHOW', name='appointmentstatus'), nullable=False, server_default='SCHEDULED'),
+        sa.Column('status', sa.Enum('scheduled', 'confirmed', 'in_progress', 'completed', 'cancelled', 'no_show', name='appointmentstatus'), nullable=False, server_default='scheduled'),
         sa.Column('reminder_sent', sa.Integer(), nullable=True, server_default='0'),
         sa.Column('notes', sa.Text(), nullable=True),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
@@ -235,3 +235,12 @@ def downgrade() -> None:
     op.drop_table('devices')
     op.drop_table('clients')
     op.drop_table('users')
+    
+    # Drop enum types
+    op.execute('DROP TYPE IF EXISTS appointmentstatus')
+    op.execute('DROP TYPE IF EXISTS movementtype')
+    op.execute('DROP TYPE IF EXISTS paymentstatus')
+    op.execute('DROP TYPE IF EXISTS paymentmethod')
+    op.execute('DROP TYPE IF EXISTS orderpriority')
+    op.execute('DROP TYPE IF EXISTS orderstatus')
+    op.execute('DROP TYPE IF EXISTS userrole')
