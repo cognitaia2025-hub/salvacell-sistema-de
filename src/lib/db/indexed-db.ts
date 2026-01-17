@@ -1,5 +1,5 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb'
-import type { Order, Client, InventoryItem } from '@/lib/types'
+import type { Order, Client } from '@/lib/types'
 
 interface SalvaCellDB extends DBSchema {
   orders: {

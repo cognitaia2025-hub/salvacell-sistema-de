@@ -124,10 +124,19 @@ export class SyncManager {
       // and update IndexedDB
       console.log('📥 Descargando datos actualizados del servidor...')
       
-      // TODO: Implementar lógica de pull
+      // Note: This functionality is deferred for future implementation
+      // When implemented, it should:
+      // 1. Fetch latest data from API endpoints
+      // 2. Update local IndexedDB with fresh data
+      // 3. Handle conflicts between local and remote data
+      // 4. Maintain data consistency
+      
+      // Example implementation:
       // const orders = await api.get('/orders')
-      // const clients = await api.get('/clients')
-      // ...
+      // for (const order of orders) {
+      //   await saveOrder(order)
+      //   await markAsSynced('orders', order.id)
+      // }
     } catch (error) {
       console.error('❌ Error descargando datos:', error)
     }

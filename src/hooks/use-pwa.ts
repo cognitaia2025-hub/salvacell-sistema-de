@@ -9,9 +9,17 @@ interface BeforeInstallPromptEvent extends Event {
 export function usePWA() {
   const [isOnline, setIsOnline] = useState(navigator.onLine)
   const [isInstallable, setIsInstallable] = useState(false)
+  const [isInstalled, setIsInstalled] = useState(false)
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
 
   useEffect(() => {
+    // Check if already installed
+    const checkInstalled = window.matchMedia('(display-mode: standalone)').matches
+    setIsInstalled(checkInstalled)
+    if (checkInstalled) {
+      setIsInstallable(false)
+    }
+
     // Subscribe to online/offline changes
     const unsubscribe = offlineDetector.subscribe(setIsOnline)
 
@@ -23,11 +31,6 @@ export function usePWA() {
     }
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-
-    // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setIsInstallable(false)
-    }
 
     return () => {
       unsubscribe()
@@ -44,6 +47,7 @@ export function usePWA() {
     if (outcome === 'accepted') {
       console.log('✅ PWA instalada')
       setIsInstallable(false)
+      setIsInstalled(true)
     }
 
     setDeferredPrompt(null)
@@ -53,6 +57,6 @@ export function usePWA() {
     isOnline,
     isInstallable,
     installPWA,
-    isInstalled: window.matchMedia('(display-mode: standalone)').matches,
+    isInstalled,
   }
 }
