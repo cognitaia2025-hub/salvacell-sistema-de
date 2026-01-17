@@ -1,6 +1,9 @@
 import { Toaster } from 'sonner'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider, useAuth } from '@/hooks/use-auth'
+import { WebSocketProvider } from '@/contexts/WebSocketContext'
+import { ConnectionStatus } from '@/components/WebSocket/ConnectionStatus'
+import { NotificationToast } from '@/components/WebSocket/NotificationToast'
 import { LoginForm } from '@/components/LoginForm'
 import Dashboard from './components/Dashboard'
 import { PublicOrderView } from './components/PublicOrderView'
@@ -49,8 +52,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AppContent />
-        <Toaster position="top-right" richColors />
+        <WebSocketProvider>
+          <ConnectionStatus />
+          <NotificationToast />
+          <AppContent />
+          <Toaster position="top-right" richColors />
+        </WebSocketProvider>
       </AuthProvider>
     </QueryClientProvider>
   )
