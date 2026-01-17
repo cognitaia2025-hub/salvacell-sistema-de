@@ -4,38 +4,38 @@
  */
 
 import { useWebSocketContext } from '@/contexts/WebSocketContext'
-import { ConnectionStatus } from '@/lib/websocket/types'
+import { ConnectionStatus as ConnStatus } from '@/lib/websocket/types'
 import { Wifi, WifiOff, AlertCircle } from 'lucide-react'
 
 export function ConnectionStatus() {
   const { status } = useWebSocketContext()
 
   // Don't show anything when connected (to avoid UI clutter)
-  if (status === ConnectionStatus.CONNECTED) {
+  if (status === ConnStatus.CONNECTED) {
     return null
   }
 
   const getStatusConfig = () => {
     switch (status) {
-      case ConnectionStatus.CONNECTING:
+      case ConnStatus.CONNECTING:
         return {
           icon: <Wifi className="w-4 h-4 animate-pulse" />,
           text: 'Conectando...',
           className: 'bg-blue-500/90 text-white',
         }
-      case ConnectionStatus.DISCONNECTED:
+      case ConnStatus.DISCONNECTED:
         return {
           icon: <WifiOff className="w-4 h-4" />,
           text: 'Desconectado',
           className: 'bg-gray-500/90 text-white',
         }
-      case ConnectionStatus.RECONNECTING:
+      case ConnStatus.RECONNECTING:
         return {
           icon: <Wifi className="w-4 h-4 animate-pulse" />,
           text: 'Reconectando...',
           className: 'bg-yellow-500/90 text-white',
         }
-      case ConnectionStatus.ERROR:
+      case ConnStatus.ERROR:
         return {
           icon: <AlertCircle className="w-4 h-4" />,
           text: 'Error de conexión',

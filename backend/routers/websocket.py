@@ -1,11 +1,10 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, Query
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
 from typing import Optional
 import uuid
 import logging
 
 from websockets.manager import ws_manager
 from websockets.events import WebSocketEvent, EventType
-from auth import get_current_user_ws
 
 logger = logging.getLogger(__name__)
 

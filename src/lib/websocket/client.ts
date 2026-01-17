@@ -23,11 +23,12 @@ export class WebSocketClient {
 
   constructor(config: WebSocketClientConfig) {
     this.config = {
+      token: undefined,
       autoReconnect: true,
       reconnectInterval: 3000,
       maxReconnectAttempts: 5,
       ...config,
-    }
+    } as Required<WebSocketClientConfig>
   }
 
   /**
