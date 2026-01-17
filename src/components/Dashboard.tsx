@@ -18,6 +18,7 @@ import { ClientsModule } from '@/components/ClientsModule'
 import { DatabaseDemo } from '@/components/DatabaseDemo'
 import { ReportsModule } from '@/components/ReportsModule'
 import { SettingsModule } from '@/components/SettingsModule'
+import { MetricsDashboard } from '@/components/MetricsDashboard'
 import type { Order, InventoryItem } from '@/lib/types'
 import {
   House,
@@ -29,10 +30,11 @@ import {
   MagnifyingGlass,
   WarningCircle,
   Users,
-  Database
+  Database,
+  Gauge
 } from '@phosphor-icons/react'
 
-type ViewMode = 'dashboard' | 'orders' | 'clients' | 'inventory' | 'reports' | 'settings' | 'database'
+type ViewMode = 'dashboard' | 'orders' | 'clients' | 'inventory' | 'reports' | 'settings' | 'database' | 'metrics'
 
 function Dashboard() {
   const [orders, setOrders] = useKV<Order[]>('orders', [])
@@ -122,6 +124,10 @@ function Dashboard() {
               <TabsTrigger value="database" className="gap-2">
                 <Database size={18} />
                 <span className="hidden md:inline">Base de Datos</span>
+              </TabsTrigger>
+              <TabsTrigger value="metrics" className="gap-2">
+                <Gauge size={18} />
+                <span className="hidden md:inline">Métricas</span>
               </TabsTrigger>
               <TabsTrigger value="reports" className="gap-2">
                 <ChartBar size={18} />
@@ -297,6 +303,8 @@ function Dashboard() {
         {viewMode === 'inventory' && <InventoryModule />}
 
         {viewMode === 'database' && <DatabaseDemo />}
+
+        {viewMode === 'metrics' && <MetricsDashboard />}
 
         {viewMode === 'reports' && <ReportsModule />}
 
