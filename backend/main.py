@@ -6,6 +6,7 @@ import os
 
 from config import settings
 from database import engine, Base
+from middleware import PerformanceMiddleware
 from routers import (
     clients,
     orders,
@@ -55,6 +56,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Performance tracking middleware
+app.add_middleware(PerformanceMiddleware)
 
 # Mount static files for uploads
 if os.path.exists(settings.UPLOAD_DIR):
