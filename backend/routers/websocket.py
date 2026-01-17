@@ -21,20 +21,26 @@ async def websocket_endpoint(
     
     Query params:
     - token: JWT token para autenticación (opcional)
+    
+    NOTE: Authentication is not currently enforced to allow easy testing.
+    In production, you should implement proper authentication by:
+    1. Creating a get_current_user_ws function in auth.py
+    2. Validating the token parameter
+    3. Rejecting connections without valid tokens
     """
     connection_id = str(uuid.uuid4())
     user_id = None
     
-    # Intentar autenticar si se proporciona token
-    if token:
-        try:
-            # Nota: get_current_user_ws necesita ser implementado en auth.py
-            # Por ahora, aceptamos conexiones sin autenticación
-            # user = await get_current_user_ws(token)
-            # user_id = str(user.id)
-            pass
-        except Exception as e:
-            logger.warning(f"Error autenticando WebSocket: {e}")
+    # TODO: Implement authentication
+    # Uncomment and implement get_current_user_ws in auth.py for production
+    # if token:
+    #     try:
+    #         user = await get_current_user_ws(token)
+    #         user_id = str(user.id)
+    #     except Exception as e:
+    #         logger.warning(f"Error autenticando WebSocket: {e}")
+    #         await websocket.close(code=4001, reason="Authentication failed")
+    #         return
     
     try:
         # Conectar cliente

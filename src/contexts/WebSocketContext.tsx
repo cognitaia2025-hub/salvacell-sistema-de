@@ -31,34 +31,43 @@ export function WebSocketProvider({
 }: WebSocketProviderProps) {
   const [status, setStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED)
   const clientRef = useRef<WebSocketClient | null>(null)
+  
+  // Store config in ref to avoid reconnections when token changes
+  const configRef = useRef({ url, token, autoConnect })
 
   useEffect(() => {
-    // Create WebSocket client
-    const client = new WebSocketClient({
-      url,
-      token,
-      autoReconnect: true,
-      reconnectInterval: 3000,
-      maxReconnectAttempts: 5,
-    })
+    // Update config ref
+    configRef.current = { url, token, autoConnect }
+    
+    // Create WebSocket client only once
+    if (!clientRef.current) {
+      const client = new WebSocketClient({
+        url,
+        token,
+        autoReconnect: true,
+        reconnectInterval: 3000,
+        maxReconnectAttempts: 5,
+      })
 
-    // Subscribe to status changes
-    const unsubscribe = client.onStatusChange(setStatus)
+      // Subscribe to status changes
+      client.onStatusChange(setStatus)
 
-    clientRef.current = client
+      clientRef.current = client
 
-    // Auto-connect if enabled
-    if (autoConnect) {
-      client.connect()
+      // Auto-connect if enabled
+      if (autoConnect) {
+        client.connect()
+      }
     }
 
-    // Cleanup on unmount
+    // Cleanup on unmount only
     return () => {
-      unsubscribe()
-      client.disconnect()
-      clientRef.current = null
+      if (clientRef.current) {
+        clientRef.current.disconnect()
+        clientRef.current = null
+      }
     }
-  }, [url, token, autoConnect])
+  }, []) // Empty deps - only run once
 
   const subscribe = (eventType: EventType, handler: EventHandler) => {
     if (!clientRef.current) {

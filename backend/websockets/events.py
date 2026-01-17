@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -32,7 +32,7 @@ class WebSocketEvent(BaseModel):
     type: EventType
     data: Dict[str, Any]
     timestamp: datetime = datetime.now()
-    user_id: str | None = None
+    user_id: Optional[str] = None
     
     class Config:
         json_encoders = {
