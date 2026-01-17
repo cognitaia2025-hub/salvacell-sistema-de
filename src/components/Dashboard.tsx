@@ -18,6 +18,7 @@ import { ClientsModule } from '@/components/ClientsModule'
 import { DatabaseDemo } from '@/components/DatabaseDemo'
 import { ReportsModule } from '@/components/ReportsModule'
 import { SettingsModule } from '@/components/SettingsModule'
+import { SyncStatus } from '@/components/PWA/SyncStatus'
 import type { Order, InventoryItem } from '@/lib/types'
 import {
   House,
@@ -87,14 +88,17 @@ function Dashboard() {
                 Sistema de Gestión de Reparaciones
               </p>
             </div>
-            <Button
-              size="lg"
-              onClick={() => setShowNewOrder(true)}
-              className="gap-2"
-            >
-              <Plus size={20} weight="bold" />
-              Nueva Orden
-            </Button>
+            <div className="flex items-center gap-4">
+              <SyncStatus />
+              <Button
+                size="lg"
+                onClick={() => setShowNewOrder(true)}
+                className="gap-2"
+              >
+                <Plus size={20} weight="bold" />
+                Nueva Orden
+              </Button>
+            </div>
           </div>
         </div>
       </header>
