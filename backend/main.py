@@ -58,7 +58,6 @@ app.add_middleware(
 )
 
 # Performance tracking middleware
-performance_middleware = PerformanceMiddleware(app)
 app.add_middleware(PerformanceMiddleware)
 
 # Mount static files for uploads
