@@ -1,4 +1,5 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb'
+import type { Order, Client, InventoryItem } from '@/lib/types'
 
 interface SalvaCellDB extends DBSchema {
   orders: {
@@ -98,7 +99,7 @@ export async function getDB(): Promise<IDBPDatabase<SalvaCellDB>> {
 }
 
 // Orders operations
-export async function saveOrder(order: any) {
+export async function saveOrder(order: Order) {
   const database = await getDB()
   await database.put('orders', {
     id: order.id,
@@ -128,7 +129,7 @@ export async function getPendingOrders() {
 }
 
 // Clients operations
-export async function saveClient(client: any) {
+export async function saveClient(client: Client) {
   const database = await getDB()
   await database.put('clients', {
     id: client.id,
