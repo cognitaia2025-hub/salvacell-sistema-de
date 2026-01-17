@@ -24,8 +24,9 @@ def test_create_inventory_item_valid_data(client):
         "sku": "TEST-SKU-001",
         "name": "Test Screen",
         "category": "screens",
-        "quantity": 10,
-        "unit_price": 50.00,
+        "stock": 10,
+        "purchase_price": 40.00,
+        "sale_price": 50.00,
         "min_stock": 5
     }
     response = client.post('/inventory/items', json=item_data)
@@ -33,7 +34,7 @@ def test_create_inventory_item_valid_data(client):
     data = response.json()
     assert data["sku"] == item_data["sku"]
     assert data["name"] == item_data["name"]
-    assert data["quantity"] == item_data["quantity"]
+    assert data["stock"] == item_data["stock"]
     assert "id" in data
 
 
@@ -43,8 +44,9 @@ def test_create_duplicate_sku(client):
         "sku": "DUPLICATE-SKU",
         "name": "Test Item 1",
         "category": "screens",
-        "quantity": 5,
-        "unit_price": 30.00,
+        "stock": 5,
+        "purchase_price": 25.00,
+        "sale_price": 30.00,
         "min_stock": 2
     }
     # First creation should succeed
@@ -63,8 +65,9 @@ def test_get_inventory_items_after_creation(client):
         "sku": "GET-TEST-001",
         "name": "Battery",
         "category": "batteries",
-        "quantity": 20,
-        "unit_price": 25.00,
+        "stock": 20,
+        "purchase_price": 20.00,
+        "sale_price": 25.00,
         "min_stock": 10
     }
     create_response = client.post('/inventory/items', json=item_data)

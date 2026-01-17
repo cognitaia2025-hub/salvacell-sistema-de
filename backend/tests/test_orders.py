@@ -33,16 +33,14 @@ def test_create_order_valid_data(client):
     # Create order
     order_data = {
         "client_id": client_id,
-        "device_brand": "Apple",
-        "device_model": "iPhone 12",
-        "issue_description": "Screen broken",
+        "problem_description": "Screen is broken and not responding to touch",
         "estimated_cost": 150.00
     }
     response = client.post('/orders/', json=order_data)
     assert response.status_code == 201
     data = response.json()
     assert data["client_id"] == client_id
-    assert data["device_brand"] == order_data["device_brand"]
+    assert data["problem_description"] == order_data["problem_description"]
     assert "id" in data
     assert "folio" in data
 
@@ -60,9 +58,7 @@ def test_get_order_by_id(client):
     
     order_data = {
         "client_id": client_id,
-        "device_brand": "Samsung",
-        "device_model": "Galaxy S21",
-        "issue_description": "Battery issue",
+        "problem_description": "Battery drains very quickly and phone overheats",
         "estimated_cost": 80.00
     }
     order_response = client.post('/orders/', json=order_data)
