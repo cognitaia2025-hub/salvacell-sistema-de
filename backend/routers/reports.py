@@ -1,12 +1,19 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, case
 from typing import Optional
 from datetime import datetime, timedelta
 from database import get_db
-from models import Order, OrderStatus, Client, Payment, PaymentMethod, InventoryItem, InventoryMovement
+from models import Order, OrderStatus, Client, Payment, PaymentMethod, InventoryItem, InventoryMovement, User, Device
 from pydantic import BaseModel
 from decimal import Decimal
+from auth import get_current_user, require_role
+from utils.pdf_generator import (
+    pdf_generate_order_ticket,
+    pdf_generate_invoice,
+    pdf_generate_report
+)
 
 router = APIRouter(prefix="/reports", tags=["reports"])
 
@@ -354,4 +361,162 @@ async def get_dashboard_summary(
         financial=financial,
         inventory=inventory,
         clients=clients
+    )
+
+
+# ============= PDF Endpoints =============
+@router.get("/orders/{order_id}/ticket")
+async def download_order_ticket(
+    order_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Descargar ticket PDF de una orden"""
+    # Obtener orden con relaciones
+    result = await db.execute(
+        select(Order).where(Order.id == order_id)
+    )
+    order = result.scalar_one_or_none()
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="Orden no encontrada")
+    
+    # Obtener cliente
+    client_result = await db.execute(
+        select(Client).where(Client.id == order.client_id)
+    )
+    client = client_result.scalar_one_or_none()
+    
+    # Obtener dispositivo
+    device = None
+    if order.device_id:
+        device_result = await db.execute(
+            select(Device).where(Device.id == order.device_id)
+        )
+        device = device_result.scalar_one_or_none()
+    
+    # Preparar datos para PDF
+    order_data = {
+        'folio': order.folio,
+        'created_at': order.created_at.strftime('%d/%m/%Y'),
+        'status': order.status.value,
+        'priority': order.priority.value.capitalize(),
+        'client': {
+            'name': client.name if client else 'N/A',
+            'phone': client.phone if client else 'N/A',
+            'email': client.email if client else 'N/A'
+        },
+        'device': {
+            'brand': device.brand if device else 'N/A',
+            'model': device.model if device else 'N/A',
+            'imei': device.imei if device else 'N/A',
+            'accessories': device.accessories if device else 'N/A'
+        },
+        'problem': order.problem_description,
+        'services': order.diagnosis or 'En proceso de diagnóstico',
+        'estimated_cost': float(order.estimated_cost) if order.estimated_cost else 0,
+        'estimated_delivery': order.estimated_delivery_date.strftime('%d/%m/%Y') if order.estimated_delivery_date else 'Por definir'
+    }
+    
+    # Generar PDF
+    pdf_buffer = pdf_generate_order_ticket(order_data)
+    
+    # Retornar como stream
+    return StreamingResponse(
+        pdf_buffer,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename=ticket_{order.folio}.pdf"
+        }
+    )
+
+
+@router.get("/orders/{order_id}/invoice")
+async def download_order_invoice(
+    order_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Descargar comprobante de pago PDF"""
+    # Obtener orden
+    result = await db.execute(
+        select(Order).where(Order.id == order_id)
+    )
+    order = result.scalar_one_or_none()
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="Orden no encontrada")
+    
+    # Obtener cliente
+    client_result = await db.execute(
+        select(Client).where(Client.id == order.client_id)
+    )
+    client = client_result.scalar_one_or_none()
+    
+    # Obtener pagos
+    payments_result = await db.execute(
+        select(Payment).where(Payment.order_id == order_id)
+    )
+    payments = payments_result.scalars().all()
+    
+    # Preparar datos
+    order_data = {
+        'folio': order.folio,
+        'client': {
+            'name': client.name if client else 'N/A'
+        }
+    }
+    
+    payments_data = [
+        {
+            'timestamp': p.created_at.strftime('%d/%m/%Y %H:%M'),
+            'method': p.method.value.capitalize(),
+            'amount': float(p.amount)
+        }
+        for p in payments
+    ]
+    
+    # Generar PDF
+    pdf_buffer = pdf_generate_invoice(order_data, payments_data)
+    
+    return StreamingResponse(
+        pdf_buffer,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename=comprobante_{order.folio}.pdf"
+        }
+    )
+
+
+@router.get("/generate/{report_type}")
+async def generate_report(
+    report_type: str,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role("admin", "receptionist"))
+):
+    """Generar reporte PDF (orders, sales, inventory)"""
+    if report_type not in ['orders', 'sales', 'inventory']:
+        raise HTTPException(status_code=400, detail="Tipo de reporte inválido")
+    
+    # TODO: Implementar lógica de consulta según report_type
+    report_data = {
+        'start_date': start_date or datetime.now().strftime('%d/%m/%Y'),
+        'end_date': end_date or datetime.now().strftime('%d/%m/%Y'),
+        'data': [
+            ['Columna 1', 'Columna 2', 'Columna 3'],
+            ['Dato 1', 'Dato 2', 'Dato 3']
+        ]
+    }
+    
+    # Generar PDF
+    pdf_buffer = pdf_generate_report(report_data, report_type)
+    
+    return StreamingResponse(
+        pdf_buffer,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename=reporte_{report_type}_{datetime.now().strftime('%Y%m%d')}.pdf"
+        }
     )

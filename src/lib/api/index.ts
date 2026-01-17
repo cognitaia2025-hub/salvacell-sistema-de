@@ -7,6 +7,7 @@ export { authAPI } from './auth'
 export { reportsAPI } from './reports'
 export { paymentsAPI } from './payments'
 export { photosApi } from './photos'
+export { metricsAPI } from './metrics'
 
 
 export type { ClientWithStats, ClientCreateData, ClientUpdateData } from './clients'
@@ -34,4 +35,10 @@ export type {
   PaymentSummary,
 } from './payments'
 export type { OrderPhoto } from './photos'
+export type {
+  UserEngagementMetrics,
+  SystemPerformanceMetrics,
+  OperationalMetrics,
+  DashboardMetrics,
+} from './metrics'
 

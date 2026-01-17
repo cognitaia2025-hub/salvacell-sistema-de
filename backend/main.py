@@ -6,6 +6,7 @@ import os
 
 from config import settings
 from database import engine, Base
+from middleware import PerformanceMiddleware
 from routers import (
     clients,
     orders,
@@ -16,6 +17,7 @@ from routers import (
     payments,
     photos,
     export,
+    websocket as ws_router,
 )
 
 
@@ -55,6 +57,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Performance tracking middleware
+app.add_middleware(PerformanceMiddleware)
+
 # Mount static files for uploads
 if os.path.exists(settings.UPLOAD_DIR):
     app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
@@ -69,6 +74,7 @@ app.include_router(reports.router)
 app.include_router(payments.router)
 app.include_router(photos.router)
 app.include_router(export.router)
+app.include_router(ws_router.router, prefix="/ws", tags=["websocket"])
 
 
 @app.get("/")
