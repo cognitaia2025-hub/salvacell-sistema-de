@@ -89,14 +89,17 @@ function Dashboard() {
                 Sistema de Gestión de Reparaciones
               </p>
             </div>
-            <Button
-              size="lg"
-              onClick={() => setShowNewOrder(true)}
-              className="gap-2"
-            >
-              <Plus size={20} weight="bold" />
-              Nueva Orden
-            </Button>
+            <div className="flex items-center gap-4">
+              <SyncStatus />
+              <Button
+                size="lg"
+                onClick={() => setShowNewOrder(true)}
+                className="gap-2"
+              >
+                <Plus size={20} weight="bold" />
+                Nueva Orden
+              </Button>
+            </div>
           </div>
         </div>
       </header>

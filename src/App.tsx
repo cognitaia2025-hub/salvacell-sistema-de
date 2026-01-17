@@ -7,6 +7,9 @@ import { NotificationToast } from '@/components/WebSocket/NotificationToast'
 import { LoginForm } from '@/components/LoginForm'
 import Dashboard from './components/Dashboard'
 import { PublicOrderView } from './components/PublicOrderView'
+import { OfflineIndicator } from '@/components/PWA/OfflineIndicator'
+import { InstallPrompt } from '@/components/PWA/InstallPrompt'
+import { usePWA } from '@/hooks/use-pwa'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,12 +22,18 @@ const queryClient = new QueryClient({
 
 function AppContent() {
   const { isAuthenticated, isLoading } = useAuth()
+  const { isOnline, isInstallable, installPWA } = usePWA()
   const urlParams = new URLSearchParams(window.location.search)
   const qrCode = urlParams.get('qr')
 
   // Public view for QR code orders (no authentication required)
   if (qrCode) {
-    return <PublicOrderView folio={qrCode} />
+    return (
+      <>
+        <OfflineIndicator isOnline={isOnline} />
+        <PublicOrderView folio={qrCode} />
+      </>
+    )
   }
 
   // Show loading state
@@ -41,11 +50,22 @@ function AppContent() {
 
   // Show login if not authenticated
   if (!isAuthenticated) {
-    return <LoginForm />
+    return (
+      <>
+        <OfflineIndicator isOnline={isOnline} />
+        <LoginForm />
+      </>
+    )
   }
 
   // Show dashboard if authenticated
-  return <Dashboard />
+  return (
+    <>
+      <OfflineIndicator isOnline={isOnline} />
+      {isInstallable && <InstallPrompt onInstall={installPWA} />}
+      <Dashboard />
+    </>
+  )
 }
 
 function App() {
