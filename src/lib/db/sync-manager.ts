@@ -253,14 +253,28 @@ export class SyncManager {
   private async updateLocalOrderWithServerId(tempId: string, serverOrder: any) {
     const database = await getDB()
     
-    // Delete the old entry with temp ID
-    await database.delete('orders', tempId)
-    
-    // Save the new entry with server ID
-    await saveOrder({
-      ...serverOrder,
-      syncStatus: 'synced'
-    })
+    try {
+      // Check if temp ID entry exists before attempting operations
+      const existingEntry = await database.get('orders', tempId)
+      
+      if (existingEntry) {
+        // Delete the old entry with temp ID
+        await database.delete('orders', tempId)
+      }
+      
+      // Save the new entry with server ID
+      await saveOrder({
+        ...serverOrder,
+        syncStatus: 'synced'
+      })
+    } catch (error) {
+      console.error('Error updating local order with server ID:', error)
+      // Still try to save the server order even if deletion failed
+      await saveOrder({
+        ...serverOrder,
+        syncStatus: 'synced'
+      })
+    }
   }
 
   /**
@@ -290,8 +304,24 @@ export class SyncManager {
           for (const serverOrder of ordersResponse) {
             const localOrder = localOrdersMap.get(serverOrder.id)
             
-            // Only update if server version is newer or local doesn't exist
-            if (!localOrder || new Date(serverOrder.updated_at) > new Date(localOrder.updatedAt)) {
+            // Determine if we should update based on timestamps
+            // Default to updating if we can't reliably compare dates
+            let shouldUpdate = !localOrder
+            
+            if (localOrder && localOrder.updatedAt && serverOrder.updated_at) {
+              const localDate = new Date(localOrder.updatedAt)
+              const serverDate = new Date(serverOrder.updated_at)
+              
+              // Only compare if both dates are valid
+              if (!isNaN(localDate.getTime()) && !isNaN(serverDate.getTime())) {
+                shouldUpdate = serverDate > localDate
+              } else {
+                // If dates are invalid, default to updating from server
+                shouldUpdate = true
+              }
+            }
+            
+            if (shouldUpdate) {
               await saveOrder({
                 id: serverOrder.id,
                 folio: serverOrder.folio,

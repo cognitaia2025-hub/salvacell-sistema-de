@@ -29,22 +29,34 @@ async def check_scheduling_conflict(
     
     # Find appointments that overlap with the requested time slot
     # Overlap occurs when: existing_start < new_end AND existing_end > new_start
+    
+    # Build condition for calculating appointment end time
+    # If end_date is explicitly set, use it; otherwise calculate from duration
+    has_explicit_end = and_(
+        Appointment.end_date.isnot(None),
+        Appointment.end_date > scheduled_date
+    )
+    
+    # Calculate end time from duration: scheduled_date + interval of duration_minutes
+    # Using make_interval(years, months, weeks, days, hours, minutes, seconds)
+    calculated_end_after_start = and_(
+        Appointment.end_date.is_(None),
+        (Appointment.scheduled_date + func.make_interval(
+            0,  # years
+            0,  # months
+            0,  # weeks
+            0,  # days
+            0,  # hours
+            Appointment.duration_minutes,  # minutes
+            0   # seconds
+        )) > scheduled_date
+    )
+    
     query = select(Appointment).where(
         and_(
             Appointment.status.notin_([AppointmentStatus.CANCELLED, AppointmentStatus.NO_SHOW]),
             Appointment.scheduled_date < end_date,
-            or_(
-                # If end_date is set, use it for comparison
-                and_(
-                    Appointment.end_date.isnot(None),
-                    Appointment.end_date > scheduled_date
-                ),
-                # Otherwise, calculate end from scheduled_date + duration_minutes
-                and_(
-                    Appointment.end_date.is_(None),
-                    (Appointment.scheduled_date + func.make_interval(0, 0, 0, 0, 0, Appointment.duration_minutes, 0)) > scheduled_date
-                )
-            )
+            or_(has_explicit_end, calculated_end_after_start)
         )
     )
     
